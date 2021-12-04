@@ -1,5 +1,6 @@
 package animalSimulation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public interface IWorldMap extends IPositionChangeObserver {
@@ -12,4 +13,8 @@ public interface IWorldMap extends IPositionChangeObserver {
     boolean canMoveTo(Vector2d position);
 
     boolean isOccupied(Vector2d position);
+
+    Rect2D getBoundingBox();
+
+    HashMap<Vector2d, LinkedList<IMapElement>> getElements();
 }

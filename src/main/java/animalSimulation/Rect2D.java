@@ -13,6 +13,10 @@ public class Rect2D {
         return point.follows(this.lowerLeft) && point.precedes(this.upperRight);
     }
 
+    public boolean contains(Rect2D rect) {
+        return rect.lowerLeft.follows(this.lowerLeft) && rect.upperRight.precedes(this.upperRight);
+    }
+
     public Vector2d getDimensions() {
         return new Vector2d(upperRight.x - lowerLeft.x + 1, upperRight.y - lowerLeft.y + 1);
     }

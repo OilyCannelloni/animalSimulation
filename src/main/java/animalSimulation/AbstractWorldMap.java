@@ -2,18 +2,26 @@ package animalSimulation;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 public abstract class AbstractWorldMap implements IWorldMap {
-    protected Map<Vector2d, LinkedList<IMapElement>> mapElements;
+    protected HashMap<Vector2d, LinkedList<IMapElement>> mapElements;
     protected Rect2D boundingBox;
 
     public AbstractWorldMap(int width, int height) {
         this.mapElements = new HashMap<>();
         this.boundingBox = new Rect2D(
                 new Vector2d(0, 0),
-                new Vector2d(width, height)
+                new Vector2d(width - 1, height - 1)
         );
+    }
+
+    public Rect2D getBoundingBox() {
+        return this.boundingBox;
+    }
+
+    @Override
+    public HashMap<Vector2d, LinkedList<IMapElement>> getElements() {
+        return this.mapElements;
     }
 
     @Override
@@ -24,22 +32,38 @@ public abstract class AbstractWorldMap implements IWorldMap {
             return false;
         }
         LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
-        elementsAtPosition.add(element);
+        if (elementsAtPosition == null) {
+            elementsAtPosition = new LinkedList<>();
+            elementsAtPosition.add(element);
+            this.mapElements.put(position, elementsAtPosition);
+        } else {
+            elementsAtPosition.add(element);
+        }
         return true;
     }
 
     private void forcePlaceElement(IMapElement element) {
         Vector2d position = element.getPosition();
-        this.mapElements.get(position).add(element);
+        LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
+        if (elementsAtPosition == null) {
+            elementsAtPosition = new LinkedList<>();
+            elementsAtPosition.add(element);
+            this.mapElements.put(position, elementsAtPosition);
+        } else {
+            elementsAtPosition.add(element);
+        }
     }
 
     @Override
     public boolean removeElement(IMapElement element) {
         Vector2d position = element.getPosition();
         LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
-        if (elementsAtPosition.remove(element)) return true;
-        System.out.printf("Cannot remove %s from %s%n", element, position);
-        return false;
+        if (elementsAtPosition == null || !elementsAtPosition.remove(element)) {
+            System.out.printf("Cannot remove %s from %s%n", element, position);
+            return false;
+        }
+        if (elementsAtPosition.isEmpty()) this.mapElements.remove(position);
+        return true;
     }
 
     @Override
@@ -54,7 +78,8 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return this.ElementsAt(position).isEmpty();
+        if (this.ElementsAt(position) == null) return false;
+        return !this.ElementsAt(position).isEmpty();
     }
 
     @Override

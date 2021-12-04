@@ -1,8 +1,9 @@
 package animalSimulation;
 
+import javax.swing.*;
+
 public abstract class AbstractMapElement implements IMapElement {
     protected Vector2d position;
-    protected String symbol;
     protected IWorldMap map;
 
     public AbstractMapElement(IWorldMap map, Vector2d position) {
@@ -18,10 +19,5 @@ public abstract class AbstractMapElement implements IMapElement {
     @Override
     public void interactWith(IMapElement other) {
 
-    }
-
-    @Override
-    public String getSymbol() {
-        return this.symbol;
     }
 }
