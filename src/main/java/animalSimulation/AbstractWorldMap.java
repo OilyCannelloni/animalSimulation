@@ -5,10 +5,12 @@ import java.util.LinkedList;
 
 public abstract class AbstractWorldMap implements IWorldMap {
     protected HashMap<Vector2d, LinkedList<IMapElement>> mapElements;
+    protected LinkedList<IMovableElement> movableElements;
     protected Rect2D boundingBox;
 
     public AbstractWorldMap(int width, int height) {
         this.mapElements = new HashMap<>();
+        this.movableElements = new LinkedList<>();
         this.boundingBox = new Rect2D(
                 new Vector2d(0, 0),
                 new Vector2d(width - 1, height - 1)
@@ -22,6 +24,11 @@ public abstract class AbstractWorldMap implements IWorldMap {
     @Override
     public HashMap<Vector2d, LinkedList<IMapElement>> getElements() {
         return this.mapElements;
+    }
+
+    @Override
+    public LinkedList<IMovableElement> getMovableElements() {
+        return new LinkedList<>(this.movableElements);
     }
 
     @Override
@@ -39,11 +46,14 @@ public abstract class AbstractWorldMap implements IWorldMap {
         } else {
             elementsAtPosition.add(element);
         }
+
+        if (element instanceof IMovableElement) {
+            this.movableElements.add((IMovableElement) element);
+        }
         return true;
     }
 
-    private void forcePlaceElement(IMapElement element) {
-        Vector2d position = element.getPosition();
+    private void forcePlaceElement(IMapElement element, Vector2d position) {
         LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
         if (elementsAtPosition == null) {
             elementsAtPosition = new LinkedList<>();
@@ -51,6 +61,10 @@ public abstract class AbstractWorldMap implements IWorldMap {
             this.mapElements.put(position, elementsAtPosition);
         } else {
             elementsAtPosition.add(element);
+        }
+
+        if (element instanceof IMovableElement) {
+            this.movableElements.add((IMovableElement) element);
         }
     }
 
@@ -63,6 +77,10 @@ public abstract class AbstractWorldMap implements IWorldMap {
             return false;
         }
         if (elementsAtPosition.isEmpty()) this.mapElements.remove(position);
+
+        if (element instanceof IMovableElement) {
+            this.movableElements.remove((IMovableElement) element);
+        }
         return true;
     }
 
@@ -84,7 +102,8 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     @Override
     public void positionChanged(IMapElement element, Vector2d oldPosition, Vector2d newPosition) {
-        assert this.removeElement(element);
-        this.forcePlaceElement(element);
+        boolean wasRemoved = this.removeElement(element);
+        assert wasRemoved;
+        this.forcePlaceElement(element, newPosition);
     }
 }

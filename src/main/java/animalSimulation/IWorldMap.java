@@ -17,4 +17,6 @@ public interface IWorldMap extends IPositionChangeObserver {
     Rect2D getBoundingBox();
 
     HashMap<Vector2d, LinkedList<IMapElement>> getElements();
+
+    LinkedList<IMovableElement> getMovableElements();
 }

@@ -61,6 +61,8 @@ public class MapVisualizer {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 this.grid[i][j].removeAll();
+                this.grid[i][j].revalidate();
+                this.grid[i][j].repaint();
             }
         }
     }
@@ -73,6 +75,10 @@ public class MapVisualizer {
             }
         }
         this.frame.add(this.gridPanel);
+        this.gridPanel.revalidate();
+        this.gridPanel.repaint();
+        this.frame.revalidate();
+        this.frame.repaint();
         this.frame.setVisible(true);
     }
 }

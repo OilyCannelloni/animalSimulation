@@ -18,4 +18,13 @@ public class Algorithm {
     public static void partitionIntoK(int n, int k) {
 
     }
+
+    public static int[] generateRandomGenome(int length, int nVariants) {
+        Random random = new Random();
+        int[] res = new int[length];
+        for (int i = 0; i < length; i++) {
+            res[i] = random.nextInt(nVariants);
+        }
+        return res;
+    }
 }

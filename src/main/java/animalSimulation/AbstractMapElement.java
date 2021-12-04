@@ -1,7 +1,5 @@
 package animalSimulation;
 
-import javax.swing.*;
-
 public abstract class AbstractMapElement implements IMapElement {
     protected Vector2d position;
     protected IWorldMap map;

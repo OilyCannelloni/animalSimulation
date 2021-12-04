@@ -21,6 +21,7 @@ public class World {
         map.placeElement(a1);
 
         MapVisualizer visualizer = new MapVisualizer(map);
-        visualizer.draw();
+        SimulationEngine engine = new SimulationEngine(visualizer, map, 100);
+        engine.run(100);
     }
 }
