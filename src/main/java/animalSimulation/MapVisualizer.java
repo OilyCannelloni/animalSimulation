@@ -10,6 +10,7 @@ public class MapVisualizer {
     private int fieldHeight, fieldWidth, gridWidth, gridHeight, rows, cols;
     private final JFrame frame;
     private final JPanel gridPanel;
+    private final ImageIcon background;
 
     private final JPanel[][] grid;
 
@@ -29,7 +30,9 @@ public class MapVisualizer {
 
         this.frame = new JFrame();
         this.frame.setSize(this.gridWidth, this.gridHeight);
-        this.gridPanel = new JPanel();
+
+        this.background = new ImageIcon("./src/main/resources/images/jungle1.png");
+        this.gridPanel = new BGPanel(this.background);
         this.gridPanel.setLayout(new GridLayout(30, 100, 0, 0));
 
         this.grid = new JPanel[30][100];
@@ -37,6 +40,7 @@ public class MapVisualizer {
             for (int j = 0; j < this.cols; j++) {
                 this.grid[i][j] = new JPanel();
                 this.grid[i][j].setSize(this.fieldWidth + 2, this.fieldHeight + 2);
+                this.grid[i][j].setOpaque(false);
                 this.gridPanel.add(this.grid[i][j]);
             }
         }
