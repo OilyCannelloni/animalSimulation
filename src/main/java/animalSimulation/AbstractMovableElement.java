@@ -22,6 +22,7 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     public void move() {
         Vector2d target = this.position.add(this.facing.toUnitVector());
         if (this.map.canMoveTo(target)) {
+            this.onMove();
             this.positionChanged(this.position, target);
             this.position = target;
         }
@@ -48,4 +49,6 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     public Facing getFacing() {
         return this.facing;
     }
+
+    protected void onMove() {}
 }

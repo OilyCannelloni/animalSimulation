@@ -27,4 +27,18 @@ public enum Facing {
             default: return new Vector2d(0, 0);
         }
     }
+
+    public String toString() {
+        switch (this) {
+            case N: return "N";
+            case NE: return "NE";
+            case E: return "E";
+            case SE: return "SE";
+            case S: return "S";
+            case SW: return "SW";
+            case W: return "W";
+            case NW: return "NW";
+            default: return "N";
+        }
+    }
 }

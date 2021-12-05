@@ -15,6 +15,11 @@ public class Algorithm {
         }
     }
 
+    public static double map(double x, double a1, double b1, double a2, double b2) {
+        double p = (x - a1)/(b1 - a1);
+        return a2 + p*(b2 - a2);
+    }
+
     public static void partitionIntoK(int n, int k) {
 
     }

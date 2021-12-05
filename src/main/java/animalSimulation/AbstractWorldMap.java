@@ -106,4 +106,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
         assert wasRemoved;
         this.forcePlaceElement(element, newPosition);
     }
+
+
 }
