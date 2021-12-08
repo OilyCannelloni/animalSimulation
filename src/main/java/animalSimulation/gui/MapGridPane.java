@@ -49,7 +49,7 @@ public class MapGridPane extends GridPane {
         return this.dimensions;
     }
 
-    private MapGridPaneField getField(Vector2d position) {
+    public MapGridPaneField getField(Vector2d position) {
         return this.fields[position.x][position.y];
     }
 

@@ -6,12 +6,13 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.concurrent.TimeUnit;
+import java.util.LinkedList;
 
-public class App extends Application implements IPositionChangeObserver {
+public class App extends Application {
     public JungleMap map;
     public MapGridPane grid;
     private int epochs = Integer.MAX_VALUE;
+    private Engine engine;
 
     @Override
     public void start(Stage primaryStage) {
@@ -22,24 +23,14 @@ public class App extends Application implements IPositionChangeObserver {
                 this.grid.getDimensions().y
         );
 
-        this.grid.draw();
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
         Thread thread = new Thread(() -> {
-            Runnable nextTurn = () -> {
-                processTurn();
-                grid.clear();
-                grid.draw();
-            };
-
             while (true) {
                 try {
                     Thread.sleep(300);
+                    Platform.runLater(this::processTurn);
                 } catch (InterruptedException ignore) {
                     Thread.currentThread().interrupt();
                 }
-                Platform.runLater(nextTurn);
             }
         });
 
@@ -50,28 +41,25 @@ public class App extends Application implements IPositionChangeObserver {
         primaryStage.show();
     }
 
+
     private void processTurn() {
-        // remove dead bodies
-        for (IMovableElement e : this.map.getMovableElements()) {
-            if (e instanceof Animal) {
-                Animal a = (Animal) e;
-                if (a.getEnergy() <= 0) map.removeElement(a);
-            }
+        // apply simulation
+        this.engine.processTurn();
+
+        // update map
+        for (Vector2d position : this.engine.changedPositions) {
+            this.grid.getField(position).update(map.ElementsAt(position));
         }
 
-        // turn and move animals
-        for (IMovableElement e : this.map.getMovableElements()) {
-            if (e instanceof Animal) {
-                Animal a = (Animal) e;
-                a.turn();
-                a.move();
-            }
-        }
+        // tidy up
+        this.engine.endTurn();
     }
 
     public void init() {
         ImageManager imageManager = new ImageManager();
         imageManager.load();
+
+
 
         this.map = new JungleMap(
                 100,
@@ -82,14 +70,17 @@ public class App extends Application implements IPositionChangeObserver {
                 )
         );
 
+        this.engine = new Engine(this.map);
+
         this.grid = new MapGridPane(map);
 
-        Animal a1 = new Animal(this.map, imageManager, new Vector2d(15, 15), 30);
+        LinkedList<IPositionChangeObserver> observers = new LinkedList<>();
+        observers.add(engine);
+        Animal a1 = new Animal(this.map, imageManager, new Vector2d(15, 15), 30, observers);
         map.placeElement(a1);
-    }
-
-    @Override
-    public void positionChanged(IMapElement element, Vector2d oldPosition, Vector2d newPosition) {
-
+        Animal a2 = new Animal(this.map, imageManager, new Vector2d(80, 20), 30, observers);
+        map.placeElement(a2);
+        Animal a3 = new Animal(this.map, imageManager, new Vector2d(15, 14), 30, observers);
+        map.placeElement(a3);
     }
 }

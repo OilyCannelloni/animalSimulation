@@ -26,6 +26,11 @@ public class MapGridPaneField extends StackPane {
     }
 
     public void update(LinkedList<IMapElement> els) {
+        if (els == null) {
+            this.clear();
+            return;
+        }
+
         ListIterator<ImageView> itr = this.imageViews.listIterator();
         for (IMapElement e : els) {
             itr.next().setImage(e.getImage());

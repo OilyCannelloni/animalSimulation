@@ -4,6 +4,7 @@ import animalSimulation.gui.ImageManager;
 import javafx.scene.image.Image;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -36,16 +37,16 @@ public final class Animal extends AbstractMovableElement {
     private HashMap<FacingEnergyPair, Image> images;
     private ImageManager imageManager;
 
-    public Animal(IWorldMap map, ImageManager imageManager, Vector2d position, int energy) {
-        super(map, position);
+    public Animal(IWorldMap map, ImageManager imageManager, Vector2d position, int energy, List<IPositionChangeObserver> observers) {
+        super(map, position, observers);
         this.imageManager = imageManager;
         this.energy = energy;
         this.genome = Algorithm.generateRandomGenome(this.genomeLength, this.geneVariants);
         this.initGraphics();
     }
 
-    public Animal(IWorldMap map, Vector2d position, Animal parent1, Animal parent2) {
-        super(map, position);
+    public Animal(IWorldMap map, Vector2d position, Animal parent1, Animal parent2, List<IPositionChangeObserver> observers) {
+        super(map, position, observers);
         this.energy = 10;
         this.genome = new int[this.genomeLength];
         this.initGraphics();

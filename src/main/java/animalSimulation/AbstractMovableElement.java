@@ -1,16 +1,18 @@
 package animalSimulation;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractMovableElement extends AbstractMapElement implements IMovableElement {
     protected Facing facing;
     protected LinkedList<IPositionChangeObserver> observers;
 
-    public AbstractMovableElement(IWorldMap map, Vector2d position) {
+    public AbstractMovableElement(IWorldMap map, Vector2d position, List<IPositionChangeObserver> observers) {
         super(map, position);
         this.facing = Facing.N;
         this.observers = new LinkedList<>();
         this.addObserver(map);
+        this.observers.addAll(observers);
     }
 
     @Override
