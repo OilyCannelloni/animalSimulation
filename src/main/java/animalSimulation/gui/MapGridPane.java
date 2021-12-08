@@ -50,12 +50,24 @@ public class MapGridPane extends GridPane {
         return this.dimensions;
     }
 
+    private ImageView getField(Vector2d position) {
+        return this.fields[position.x][position.y];
+    }
+
     public void draw() {
         for (LinkedList<IMapElement> field : map.getElements().values()) {
             for (IMapElement e : field) {
                 Vector2d position = e.getPosition();
                 Image img = e.getImage();
                 this.fields[position.x][position.y].setImage(img);
+            }
+        }
+    }
+
+    public void clear() {
+        for (int i = 0; i < this.nSquares.x; i++) {
+            for (int j = 0; j < this.nSquares.y; j++) {
+                this.fields[i][j].setImage(null);
             }
         }
     }
