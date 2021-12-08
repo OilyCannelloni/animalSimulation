@@ -56,11 +56,6 @@ public class App extends Application {
     }
 
     public void init() {
-        ImageManager imageManager = new ImageManager();
-        imageManager.load();
-
-
-
         this.map = new JungleMap(
                 100,
                 30,
@@ -71,16 +66,22 @@ public class App extends Application {
         );
 
         this.engine = new Engine(this.map);
-
         this.grid = new MapGridPane(map);
 
         LinkedList<IPositionChangeObserver> observers = new LinkedList<>();
         observers.add(engine);
-        Animal a1 = new Animal(this.map, imageManager, new Vector2d(15, 15), 30, observers);
-        map.placeElement(a1);
-        Animal a2 = new Animal(this.map, imageManager, new Vector2d(80, 20), 30, observers);
-        map.placeElement(a2);
-        Animal a3 = new Animal(this.map, imageManager, new Vector2d(15, 14), 30, observers);
-        map.placeElement(a3);
+        ImageManager imageManager = new ImageManager();
+        imageManager.load();
+
+        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager, observers);
+        Vector2d[] startPositions = {
+                new Vector2d(10, 20),
+                new Vector2d(10, 22),
+                new Vector2d(12, 20),
+                new Vector2d(12, 22)
+        };
+        for (Vector2d position : startPositions) {
+            animalFactory.createPlace(position);
+        }
     }
 }

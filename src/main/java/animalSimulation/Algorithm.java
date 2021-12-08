@@ -32,4 +32,8 @@ public class Algorithm {
         }
         return res;
     }
+
+    public static int[] intersectGenome(int[] g1, int[] g2) {
+        return new int[Animal.genomeLength];
+    }
 }

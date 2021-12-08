@@ -31,24 +31,18 @@ public final class Animal extends AbstractMovableElement {
         }
     }
 
-    private final int maxEnergy = 30, genomeLength = 32, geneVariants = 8;
+    public final static int maxEnergy = 30, genomeLength = 32, geneVariants = 8;
     private int energy;
     private final int[] genome;
     private HashMap<FacingEnergyPair, Image> images;
-    private ImageManager imageManager;
+    private final ImageManager imageManager;
 
-    public Animal(IWorldMap map, ImageManager imageManager, Vector2d position, int energy, List<IPositionChangeObserver> observers) {
+    public Animal(IWorldMap map, ImageManager imageManager, Vector2d position,
+                  int energy, List<IPositionChangeObserver> observers, int[] genome) {
         super(map, position, observers);
         this.imageManager = imageManager;
         this.energy = energy;
-        this.genome = Algorithm.generateRandomGenome(this.genomeLength, this.geneVariants);
-        this.initGraphics();
-    }
-
-    public Animal(IWorldMap map, Vector2d position, Animal parent1, Animal parent2, List<IPositionChangeObserver> observers) {
-        super(map, position, observers);
-        this.energy = 10;
-        this.genome = new int[this.genomeLength];
+        this.genome = genome;
         this.initGraphics();
     }
 
@@ -66,7 +60,7 @@ public final class Animal extends AbstractMovableElement {
 
     @Override
     public Image getImage() {
-        int mappedEnergy = (int) Algorithm.map(this.energy, 0, this.maxEnergy, 0, 5.999);
+        int mappedEnergy = (int) Algorithm.map(this.energy, 0, maxEnergy, 0, 5.999);
         FacingEnergyPair key = new FacingEnergyPair(this.facing, mappedEnergy);
         return this.images.get(new FacingEnergyPair(this.facing, mappedEnergy));
     }
@@ -75,9 +69,13 @@ public final class Animal extends AbstractMovableElement {
         return this.energy;
     }
 
+    public int[] getGenome() {
+        return this.genome;
+    }
+
     public void turn() {
         Random random = new Random();
-        int i = random.nextInt(this.genomeLength);
+        int i = random.nextInt(genomeLength);
         int delta = this.genome[i];
         this.facing = this.facing.rotate(delta);
     }
