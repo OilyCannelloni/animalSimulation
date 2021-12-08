@@ -1,6 +1,6 @@
 package animalSimulation;
 
-import javax.swing.*;
+import javafx.scene.image.Image;
 
 public class Plant extends AbstractMapElement {
     public Plant(IWorldMap map, Vector2d position) {
@@ -8,7 +8,7 @@ public class Plant extends AbstractMapElement {
     }
 
     @Override
-    public ImageIcon getIcon() {
+    public Image getImage() {
         return null;
     }
 }

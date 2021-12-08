@@ -68,6 +68,10 @@ public class Vector2d {
         return dimensions.x * (relative.y) + relative.x;
     }
 
+    public Vector2d multiplyEach(Vector2d other) {
+        return new Vector2d(this.x * other.x, this.y * other.y);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(this.x, this.y);
