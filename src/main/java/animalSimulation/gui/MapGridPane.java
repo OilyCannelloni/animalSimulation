@@ -3,19 +3,18 @@ package animalSimulation.gui;
 import animalSimulation.IMapElement;
 import animalSimulation.IWorldMap;
 import animalSimulation.Vector2d;
-import javafx.geometry.HPos;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 public class MapGridPane extends GridPane {
     private IWorldMap map;
-    private ImageView[][] fields;
+    private MapGridPaneField[][] fields;
     private final Vector2d dimensions, nSquares, fieldDimensions = new Vector2d(18, 18);
     private final ImageManager imageManager;
 
@@ -25,7 +24,7 @@ public class MapGridPane extends GridPane {
         this.imageManager = new ImageManager();
         this.nSquares = map.getBoundingBox().getDimensions();
         this.dimensions = this.nSquares.multiplyEach(fieldDimensions);
-        this.fields = new ImageView[this.nSquares.x][this.nSquares.y];
+        this.fields = new MapGridPaneField[this.nSquares.x][this.nSquares.y];
 
         this.configureGrid();
     }
@@ -33,7 +32,7 @@ public class MapGridPane extends GridPane {
     private void configureGrid() {
         for (int i = 0; i < this.nSquares.x; i++) {
             for (int j = 0; j < this.nSquares.y; j++) {
-                this.fields[i][j] = new ImageView();
+                this.fields[i][j] = new MapGridPaneField();
                 this.add(this.fields[i][j], i, j, 1, 1);
             }
         }
@@ -50,24 +49,20 @@ public class MapGridPane extends GridPane {
         return this.dimensions;
     }
 
-    private ImageView getField(Vector2d position) {
+    private MapGridPaneField getField(Vector2d position) {
         return this.fields[position.x][position.y];
     }
 
     public void draw() {
-        for (LinkedList<IMapElement> field : map.getElements().values()) {
-            for (IMapElement e : field) {
-                Vector2d position = e.getPosition();
-                Image img = e.getImage();
-                this.fields[position.x][position.y].setImage(img);
-            }
+        for (Map.Entry<Vector2d, LinkedList<IMapElement>> entry : map.getElements().entrySet()) {
+            this.getField(entry.getKey()).update(entry.getValue());
         }
     }
 
     public void clear() {
         for (int i = 0; i < this.nSquares.x; i++) {
             for (int j = 0; j < this.nSquares.y; j++) {
-                this.fields[i][j].setImage(null);
+                this.fields[i][j].clear();
             }
         }
     }
