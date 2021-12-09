@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AnimalFactory extends MovableElementFactory implements IFactory<Animal> {
 
-    private final int startEnergy, moveEnergy;
+    public final int startEnergy, moveEnergy;
     public AnimalFactory(
             IWorldMap map,
             ImageManager imageManager,
@@ -26,7 +26,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
             int startEnergy,
             int moveEnergy
     ) {
-        this(map, imageManager, new LinkedList<IPositionChangeObserver>(), startEnergy, moveEnergy);
+        this(map, imageManager, new LinkedList<>(), startEnergy, moveEnergy);
     }
 
     @Override
@@ -35,6 +35,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 this.map,
                 this.imageManager,
                 position,
+                this.startEnergy,
                 this.startEnergy,
                 this.moveEnergy,
                 this.observers,
@@ -47,15 +48,24 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         this.map.placeElement(this.create(position));
     }
 
+    public void createPlace(Animal parent1, Animal parent2) {
+        this.map.placeElement(this.create(parent1, parent2));
+    }
+
     public Animal create(Animal parent1, Animal parent2) {
+        int energyTransfer1 = parent1.getEnergy() / 4, energyTransfer2 = parent2.getEnergy() / 4;
+        parent1.addEnergy(-energyTransfer1);
+        parent2.addEnergy(-energyTransfer2);
+
         return new Animal(
                 this.map,
                 this.imageManager,
                 parent1.getPosition(),
-                Animal.maxEnergy * 2 / 3,
+                this.startEnergy,
+                energyTransfer1 + energyTransfer2,
                 this.moveEnergy,
                 this.observers,
-                Algorithm.intersectGenome(parent1.getGenome(), parent2.getGenome())
+                Algorithm.intersectGenome(parent1, parent2)
         );
     }
 }

@@ -3,7 +3,7 @@ package animalSimulation;
 import java.util.Random;
 
 public class Algorithm {
-    private static final Random random = new Random(System.currentTimeMillis());
+    public static final Random random = new Random(System.currentTimeMillis());
 
     public static void shuffleArray(int[] array, int firstN) {
         if (firstN >= array.length) return;
@@ -33,8 +33,24 @@ public class Algorithm {
         return res;
     }
 
-    public static int[] intersectGenome(int[] g1, int[] g2) {
-        return new int[Animal.genomeLength];
+    public static int[] intersectGenome(Animal a1, Animal a2) {
+        int[] g1 = a1.getGenome(), g2 = a2.getGenome();
+        assert g1.length == g2.length;
+        double e1 = a1.getEnergy(), e2 = a2.getEnergy();
+        double prop = e1 / (e1 + e2);
+        int a1geneN = (int) map(prop, 0, 1, 0, g1.length);
+        boolean fromLeft = random.nextBoolean();
+        int[] res = new int[g1.length];
+
+        if (fromLeft) {
+            System.arraycopy(g1, 0, res, 0, a1geneN);
+            System.arraycopy(g2, a1geneN, res, a1geneN, g1.length - a1geneN);
+        } else {
+            System.arraycopy(g1, g1.length - a1geneN, res, g1.length - a1geneN, a1geneN);
+            System.arraycopy(g2, 0, res, 0, g1.length - a1geneN);
+        }
+
+        return res;
     }
 
     public static int getRandom(int[] arr) {

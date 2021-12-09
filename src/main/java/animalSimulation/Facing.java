@@ -1,5 +1,8 @@
 package animalSimulation;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum Facing {
     N,
     NE,
@@ -40,5 +43,10 @@ public enum Facing {
             case NW: return "NW";
             default: return "N";
         }
+    }
+
+    public static Facing getRandom() {
+        Facing[] vs = Facing.values();
+        return Arrays.asList(vs).get(Algorithm.random.nextInt(vs.length));
     }
 }

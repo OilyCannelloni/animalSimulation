@@ -69,19 +69,10 @@ public class App extends Application {
         this.engine = new Engine(this.map, imageManager);
         this.grid = new MapGridPane(map);
 
-
         AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,50, 1);
-        Vector2d[] startPositions = {
-                new Vector2d(10, 20),
-                new Vector2d(10, 22),
-                new Vector2d(12, 20),
-                new Vector2d(12, 22),
-                new Vector2d(13, 21),
-                new Vector2d(13, 19)
-        };
-        for (Vector2d position : startPositions) {
+        for (int i = 0; i < 20; i++) {
+            Vector2d position = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
             animalFactory.createPlace(position);
         }
-
     }
 }

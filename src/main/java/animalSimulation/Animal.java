@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public final class Animal extends AbstractMovableElement {
     private static class FacingEnergyPair {
@@ -43,13 +42,14 @@ public final class Animal extends AbstractMovableElement {
             ImageManager imageManager,
             Vector2d position,
             int startEnergy,
+            int energy,
             int moveEnergy,
             List<IPositionChangeObserver> observers,
             int[] genome
     ) {
         super(map, position, observers);
         this.imageManager = imageManager;
-        this.energy = startEnergy;
+        this.energy = energy;
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
         this.genome = genome;

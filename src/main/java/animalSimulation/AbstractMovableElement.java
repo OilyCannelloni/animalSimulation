@@ -9,7 +9,7 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
 
     public AbstractMovableElement(IWorldMap map, Vector2d position, List<IPositionChangeObserver> observers) {
         super(map, position);
-        this.facing = Facing.N;
+        this.facing = Facing.getRandom();
         this.observers = new LinkedList<>();
         this.addObserver(map);
         this.observers.addAll(observers);
