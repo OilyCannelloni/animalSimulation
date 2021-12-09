@@ -36,10 +36,47 @@ public class Engine {
             }
         }
 
-        // place plants
-        this.junglePlantFactory.createPlace(Algorithm.getRandomEmptyField(this.map, this.map.getJungleBox()));
-        this.plantFactory.createPlace(Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox()));
+        // eat plants
+        for (IMovableElement e : this.map.getMovableElements()) {
+            Vector2d pos = e.getPosition();
+            LinkedList<IMapElement> elementsAtPosition = this.map.ElementsAt(pos);
 
+            Plant plant = null;
+            for (IMapElement element : elementsAtPosition) {
+                if (element instanceof Plant) {
+                    plant = (Plant) element;
+                    break;
+                }
+            }
+            if (plant == null) continue;
+
+            int bestEnergy = 0;
+            LinkedList<Animal> bestAnimals = new LinkedList<>();
+            for (IMapElement element : elementsAtPosition) {
+                if (!(element instanceof Animal)) continue;
+                Animal animal = (Animal) element;
+
+                if (animal.getEnergy() < bestEnergy) continue;
+                if (animal.getEnergy() > bestEnergy) {
+                    bestEnergy = animal.getEnergy();
+                    bestAnimals.clear();
+                }
+                bestAnimals.add(animal);
+            }
+
+            int nAnimals = bestAnimals.size();
+            int eatEnergy = plant.getPlantEnergy() / nAnimals;
+            bestAnimals.forEach((Animal a) -> a.addEnergy(eatEnergy));
+
+            this.map.removeElement(plant);
+        }
+
+
+        // place plants
+        Vector2d jungleField = Algorithm.getRandomEmptyField(this.map, this.map.getJungleBox());
+        if (jungleField != null) this.junglePlantFactory.createPlace(jungleField);
+        Vector2d plantField = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
+        if (plantField != null) this.plantFactory.createPlace(plantField);
     }
 
     public void endTurn() {

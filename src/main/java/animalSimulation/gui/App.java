@@ -24,7 +24,7 @@ public class App extends Application {
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(100);
                     Platform.runLater(this::processTurn);
                 } catch (InterruptedException ignore) {
                     Thread.currentThread().interrupt();

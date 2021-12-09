@@ -3,6 +3,7 @@ package animalSimulation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public interface IWorldMap extends IPositionChangeObserver {
     boolean placeElement(IMapElement element);

@@ -63,8 +63,7 @@ public class Algorithm {
         do {
             position = getRandomField(map, region);
             if (--trials == 0) {
-                System.out.println("getRandomEmptyField: exceeded max trials");
-                return new Vector2d(0, 0);
+                return null;
             }
         } while (map.isOccupied(position));
         return position;

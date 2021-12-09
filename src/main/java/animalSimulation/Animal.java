@@ -79,6 +79,11 @@ public final class Animal extends AbstractMovableElement {
         return this.energy;
     }
 
+    public void addEnergy(int energy) {
+        this.energy += energy;
+        if (this.energy > this.startEnergy) this.energy = startEnergy;
+    }
+
     public int[] getGenome() {
         return this.genome;
     }
