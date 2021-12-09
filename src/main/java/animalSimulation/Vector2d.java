@@ -72,6 +72,12 @@ public class Vector2d {
         return new Vector2d(this.x * other.x, this.y * other.y);
     }
 
+    public Vector2d multiplyEach(int a) {
+        return new Vector2d(
+                this.x * a,
+                this.y * a
+        );
+    }
     @Override
     public int hashCode() {
         return Objects.hash(this.x, this.y);

@@ -1,14 +1,22 @@
 package animalSimulation;
 
-import java.util.HashSet;
+import animalSimulation.gui.ImageManager;
 
-public class Engine implements IPositionChangeObserver {
-    private final IWorldMap map;
-    public final HashSet<Vector2d> changedPositions;
+import java.util.LinkedList;
 
-    public Engine(IWorldMap map) {
+public class Engine {
+    private final JungleMap map;
+    private final AnimalFactory animalFactory;
+    private final PlantFactory plantFactory, junglePlantFactory;
+    private final ImageManager imageManager;
+
+    public Engine(JungleMap map, ImageManager imageManager) {
         this.map = map;
-        this.changedPositions = new HashSet<>();
+        this.imageManager = imageManager;
+        LinkedList<IPositionChangeObserver> observers = new LinkedList<>();
+        this.animalFactory = new AnimalFactory(map, imageManager, 50, 1);
+        this.plantFactory = new PlantFactory(map, imageManager, false, 20);
+        this.junglePlantFactory = new PlantFactory(map, imageManager, true, 40);
     }
 
     public void processTurn() {
@@ -24,19 +32,17 @@ public class Engine implements IPositionChangeObserver {
         for (IMovableElement e : this.map.getMovableElements()) {
             if (e instanceof Animal) {
                 Animal a = (Animal) e;
-                a.turn();
-                a.move();
+                a.makeMove();
             }
         }
-    }
 
-    @Override
-    public void positionChanged(IMapElement element, Vector2d oldPosition, Vector2d newPosition) {
-        this.changedPositions.add(oldPosition);
-        this.changedPositions.add(newPosition);
+        // place plants
+        this.junglePlantFactory.createPlace(Algorithm.getRandomEmptyField(this.map, this.map.getJungleBox()));
+        this.plantFactory.createPlace(Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox()));
+
     }
 
     public void endTurn() {
-        this.changedPositions.clear();
+        this.map.clearUpdatedFields();
     }
 }

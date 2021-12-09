@@ -1,12 +1,14 @@
 package animalSimulation;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public abstract class AbstractWorldMap implements IWorldMap {
     protected HashMap<Vector2d, LinkedList<IMapElement>> mapElements;
     protected LinkedList<IMovableElement> movableElements;
     protected Rect2D boundingBox;
+    protected HashSet<Vector2d> updatedFields;
 
     public AbstractWorldMap(int width, int height) {
         this.mapElements = new HashMap<>();
@@ -15,6 +17,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
                 new Vector2d(0, 0),
                 new Vector2d(width - 1, height - 1)
         );
+        this.updatedFields = new HashSet<>();
     }
 
     public Rect2D getBoundingBox() {
@@ -50,6 +53,8 @@ public abstract class AbstractWorldMap implements IWorldMap {
         if (element instanceof IMovableElement) {
             this.movableElements.add((IMovableElement) element);
         }
+
+        this.updatedFields.add(position);
         return true;
     }
 
@@ -66,6 +71,8 @@ public abstract class AbstractWorldMap implements IWorldMap {
         if (element instanceof IMovableElement) {
             this.movableElements.add((IMovableElement) element);
         }
+
+        this.updatedFields.add(position);
     }
 
     @Override
@@ -81,6 +88,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
         if (element instanceof IMovableElement) {
             this.movableElements.remove((IMovableElement) element);
         }
+        this.updatedFields.add(position);
         return true;
     }
 
@@ -91,7 +99,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return !isOccupied(position) && this.boundingBox.contains(position);
+        return this.boundingBox.contains(position);
     }
 
     @Override
@@ -102,10 +110,28 @@ public abstract class AbstractWorldMap implements IWorldMap {
 
     @Override
     public void positionChanged(IMapElement element, Vector2d oldPosition, Vector2d newPosition) {
+        if (oldPosition.equals(newPosition)) {
+            this.updatedFields.add(oldPosition);
+            return;
+        }
+
         boolean wasRemoved = this.removeElement(element);
         assert wasRemoved;
         this.forcePlaceElement(element, newPosition);
     }
 
+    @Override
+    public void updateField(Vector2d position) {
+        this.updatedFields.add(position);
+    }
 
+    @Override
+    public HashSet<Vector2d> getUpdatedFields() {
+        return this.updatedFields;
+    }
+
+    @Override
+    public void clearUpdatedFields() {
+        this.updatedFields.clear();
+    }
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 public class ImageManager {
     String IMAGE_PATH = "file:.\\src\\main\\resources\\images\\";
+    String mapBackground = "jungle_background.png";
     HashMap<String, Image> images;
 
     public ImageManager() {
@@ -23,6 +24,10 @@ public class ImageManager {
                 images.put(name, new Image(path));
             }
         }
+
+        images.put(mapBackground, new Image(IMAGE_PATH + mapBackground));
+        images.put("plant_1.png", new Image(IMAGE_PATH + "plant_1.png"));
+        images.put("plant_2.png", new Image(IMAGE_PATH + "plant_2.png"));
     }
 
     public Image getImage(String relativePath) {

@@ -4,10 +4,7 @@ import animalSimulation.IMapElement;
 import animalSimulation.IWorldMap;
 import animalSimulation.Vector2d;
 import javafx.scene.image.Image;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,6 +24,13 @@ public class MapGridPane extends GridPane {
         this.fields = new MapGridPaneField[this.nSquares.x][this.nSquares.y];
 
         this.configureGrid();
+        this.setBackground(new Background(new BackgroundImage(
+                this.imageManager.getImage("jungle_background.png"),
+                BackgroundRepeat.REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                BackgroundSize.DEFAULT
+        )));
     }
 
     private void configureGrid() {

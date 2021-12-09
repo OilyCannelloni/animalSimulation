@@ -21,8 +21,9 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     }
 
     @Override
-    public void move() {
-        Vector2d target = this.position.add(this.facing.toUnitVector());
+    public void move(boolean forward) {
+        int mul = forward ? 1 : -1;
+        Vector2d target = this.position.add(this.facing.toUnitVector().multiplyEach(mul));
         if (this.map.canMoveTo(target)) {
             this.onMove();
             this.positionChanged(this.position, target);

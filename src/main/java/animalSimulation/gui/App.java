@@ -6,8 +6,6 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.LinkedList;
-
 public class App extends Application {
     public JungleMap map;
     public MapGridPane grid;
@@ -47,7 +45,7 @@ public class App extends Application {
         this.engine.processTurn();
 
         // update map
-        for (Vector2d position : this.engine.changedPositions) {
+        for (Vector2d position : this.map.getUpdatedFields()) {
             this.grid.getField(position).update(map.ElementsAt(position));
         }
 
@@ -60,28 +58,30 @@ public class App extends Application {
                 100,
                 30,
                 new Rect2D(
-                        new Vector2d(45, 45),
-                        new Vector2d(55, 55)
+                        new Vector2d(45, 10),
+                        new Vector2d(55, 20)
                 )
         );
 
-        this.engine = new Engine(this.map);
-        this.grid = new MapGridPane(map);
-
-        LinkedList<IPositionChangeObserver> observers = new LinkedList<>();
-        observers.add(engine);
         ImageManager imageManager = new ImageManager();
         imageManager.load();
 
-        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager, observers);
+        this.engine = new Engine(this.map, imageManager);
+        this.grid = new MapGridPane(map);
+
+
+        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,50, 1);
         Vector2d[] startPositions = {
                 new Vector2d(10, 20),
                 new Vector2d(10, 22),
                 new Vector2d(12, 20),
-                new Vector2d(12, 22)
+                new Vector2d(12, 22),
+                new Vector2d(13, 21),
+                new Vector2d(13, 19)
         };
         for (Vector2d position : startPositions) {
             animalFactory.createPlace(position);
         }
+
     }
 }

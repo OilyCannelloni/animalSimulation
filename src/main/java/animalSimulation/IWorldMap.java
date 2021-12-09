@@ -1,6 +1,7 @@
 package animalSimulation;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public interface IWorldMap extends IPositionChangeObserver {
@@ -19,4 +20,10 @@ public interface IWorldMap extends IPositionChangeObserver {
     HashMap<Vector2d, LinkedList<IMapElement>> getElements();
 
     LinkedList<IMovableElement> getMovableElements();
+
+    void updateField(Vector2d position);
+
+    HashSet<Vector2d> getUpdatedFields();
+
+    void clearUpdatedFields();
 }

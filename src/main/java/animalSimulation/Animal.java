@@ -33,15 +33,25 @@ public final class Animal extends AbstractMovableElement {
 
     public final static int maxEnergy = 30, genomeLength = 32, geneVariants = 8;
     private int energy;
+    private final int moveEnergy, startEnergy;
     private final int[] genome;
     private HashMap<FacingEnergyPair, Image> images;
     private final ImageManager imageManager;
 
-    public Animal(IWorldMap map, ImageManager imageManager, Vector2d position,
-                  int energy, List<IPositionChangeObserver> observers, int[] genome) {
+    public Animal(
+            IWorldMap map,
+            ImageManager imageManager,
+            Vector2d position,
+            int startEnergy,
+            int moveEnergy,
+            List<IPositionChangeObserver> observers,
+            int[] genome
+    ) {
         super(map, position, observers);
         this.imageManager = imageManager;
-        this.energy = energy;
+        this.energy = startEnergy;
+        this.startEnergy = startEnergy;
+        this.moveEnergy = moveEnergy;
         this.genome = genome;
         this.initGraphics();
     }
@@ -60,7 +70,7 @@ public final class Animal extends AbstractMovableElement {
 
     @Override
     public Image getImage() {
-        int mappedEnergy = (int) Algorithm.map(this.energy, 0, maxEnergy, 0, 5.999);
+        int mappedEnergy = (int) Algorithm.map(this.energy, 0, this.startEnergy, 0, 5.999);
         FacingEnergyPair key = new FacingEnergyPair(this.facing, mappedEnergy);
         return this.images.get(new FacingEnergyPair(this.facing, mappedEnergy));
     }
@@ -73,16 +83,19 @@ public final class Animal extends AbstractMovableElement {
         return this.genome;
     }
 
-    public void turn() {
-        Random random = new Random();
-        int i = random.nextInt(genomeLength);
-        int delta = this.genome[i];
-        this.facing = this.facing.rotate(delta);
+    public void makeMove() {
+        int delta = Algorithm.getRandom(this.genome);
+        if (delta == 0) this.move(true);
+        else if (delta == 4) this.move(false);
+        else {
+            this.facing = this.facing.rotate(delta);
+            this.map.updateField(this.position);
+        }
     }
 
     @Override
     protected void onMove(){
-        this.energy--;
+        this.energy -= this.moveEnergy;
     }
 }
 

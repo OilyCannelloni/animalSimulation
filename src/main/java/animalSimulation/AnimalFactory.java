@@ -2,16 +2,31 @@ package animalSimulation;
 
 import animalSimulation.gui.ImageManager;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class AnimalFactory extends MovableElementFactory implements IFactory<Animal> {
 
+    private final int startEnergy, moveEnergy;
     public AnimalFactory(
             IWorldMap map,
             ImageManager imageManager,
-            List<IPositionChangeObserver> observers
+            List<IPositionChangeObserver> observers,
+            int startEnergy,
+            int moveEnergy
     ) {
         super(map, imageManager, observers);
+        this.startEnergy = startEnergy;
+        this.moveEnergy = moveEnergy;
+    }
+
+    public AnimalFactory(
+            IWorldMap map,
+            ImageManager imageManager,
+            int startEnergy,
+            int moveEnergy
+    ) {
+        this(map, imageManager, new LinkedList<IPositionChangeObserver>(), startEnergy, moveEnergy);
     }
 
     @Override
@@ -20,7 +35,8 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 this.map,
                 this.imageManager,
                 position,
-                Animal.maxEnergy,
+                this.startEnergy,
+                this.moveEnergy,
                 this.observers,
                 Algorithm.generateRandomGenome(Animal.genomeLength, Animal.geneVariants)
         );
@@ -37,6 +53,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 this.imageManager,
                 parent1.getPosition(),
                 Animal.maxEnergy * 2 / 3,
+                this.moveEnergy,
                 this.observers,
                 Algorithm.intersectGenome(parent1.getGenome(), parent2.getGenome())
         );

@@ -8,4 +8,8 @@ public class JungleMap extends AbstractWorldMap {
         this.jungleBox = jungle;
         assert this.boundingBox.contains(this.jungleBox);
     }
+
+    public Rect2D getJungleBox() {
+        return this.jungleBox;
+    }
 }
