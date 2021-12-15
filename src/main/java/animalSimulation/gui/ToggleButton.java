@@ -29,4 +29,12 @@ public class ToggleButton extends Button {
         }
         this.isActive = !this.isActive;
     }
+
+    public void setActive() {
+        this.setText(this.active);
+    }
+
+    public void setInactive() {
+        this.setText(this.inactive);
+    }
 }

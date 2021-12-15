@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class MapGridPane extends GridPane {
     private IWorldMap map;
-    private LinkedList<IWorldMap> maps;
     private MapGridPaneField[][] fields;
-    private final Vector2d dimensions, nSquares, fieldDimensions = new Vector2d(18, 18);
+    private Vector2d nSquares;
+    private final Vector2d fieldDimensions = new Vector2d(18, 18);
     private final ImageManager imageManager;
 
     public MapGridPane(IWorldMap map) {
@@ -20,17 +20,13 @@ public class MapGridPane extends GridPane {
         this.map = map;
         this.imageManager = new ImageManager();
         this.nSquares = map.getBoundingBox().getDimensions();
-        this.dimensions = this.nSquares.multiplyEach(fieldDimensions);
         this.fields = new MapGridPaneField[this.nSquares.x][this.nSquares.y];
-
         this.configureGrid();
-        this.setBackground(new Background(new BackgroundImage(
-                this.imageManager.getImage("jungle_background.png"),
-                BackgroundRepeat.REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                BackgroundSize.DEFAULT
-        )));
+    }
+
+    public void setActiveMap(IWorldMap map) {
+        this.map = map;
+        this.nSquares = map.getBoundingBox().getDimensions();
     }
 
     private void configureGrid() {
@@ -47,10 +43,14 @@ public class MapGridPane extends GridPane {
             this.getRowConstraints().add(new RowConstraints(this.fieldDimensions.y));
 
         this.setGridLinesVisible(true);
-    }
 
-    public Vector2d getDimensions() {
-        return this.dimensions;
+        this.setBackground(new Background(new BackgroundImage(
+                this.imageManager.getImage("jungle_background.png"),
+                BackgroundRepeat.REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                BackgroundSize.DEFAULT
+        )));
     }
 
     public MapGridPaneField getField(Vector2d position) {

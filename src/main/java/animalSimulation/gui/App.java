@@ -8,24 +8,31 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class App extends Application {
-    public JungleMap map;
+    public HashMap<String, IWorldMap> maps = new HashMap<>();
     public MapGridPane grid;
     private final int epochs = Integer.MAX_VALUE;
-    private Simulation activeSimulation;
-    public Thread simulationThread, gridUpdateThread;
+    private String activeWorld;
+    private HashMap<String, Simulation> simulations = new HashMap<>();
+    public Thread gridUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
+    private ToggleButton pauseButton;
 
     @Override
     public void start(Stage primaryStage) {
-        this.init();
-
+        this.initialize();
 
         ArrayList<SelectBoxButton> simSelectButtons = new ArrayList<>();
-        simSelectButtons.add(new SelectBoxButton((e) -> System.out.println("button 1")));
-        simSelectButtons.add(new SelectBoxButton((e) -> System.out.println("button 2")));
+        simSelectButtons.add(new SelectBoxButton((e) -> {
+            System.out.println("button 1");
+            this.setActiveWorld("map1");
+        }));
+        simSelectButtons.add(new SelectBoxButton((e) -> {
+            System.out.println("button 2");
+            this.setActiveWorld("map2");
+        }));
 
         HSelectBox simulationSelect = new HSelectBox(
                 400,
@@ -33,20 +40,22 @@ public class App extends Application {
                 simSelectButtons
         );
 
-        ToggleButton pauseButton = new ToggleButton(
+        this.pauseButton = new ToggleButton(
                 (e) -> {
                     System.out.println("pauseButton");
-                    this.activeSimulation.togglePause();
-                    synchronized (this.activeSimulation.pauseLock) {
-                        this.activeSimulation.pauseLock.notifyAll();
+                    Simulation sim = this.simulations.get(this.activeWorld);
+                    sim.togglePause();
+                    if (!sim.paused) synchronized (sim.pausePauseLock) {
+                        sim.pausePauseLock.notifyAll();
                     }
-                    if (this.activeSimulation.paused) this.reloadGrid();
+                    if (sim.paused) this.reloadGrid();
+                    System.out.printf("Simulation %s's pause set to %b", this.activeWorld, sim.paused);
                 },
                 "Unpause Simulation",
                 "Pause Simulation"
         );
 
-        VBox controlBox = new VBox(simulationSelect, pauseButton);
+        VBox controlBox = new VBox(simulationSelect, this.pauseButton);
         VBox statBox = new VBox();
         VBox graphBox = new VBox();
 
@@ -57,6 +66,8 @@ public class App extends Application {
         Scene scene = new Scene(
                 SceneVBox
         );
+
+
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -82,20 +93,72 @@ public class App extends Application {
     }
 
     private void updateGrid() {
-        for (Vector2d position : this.map.getUpdatedFields()) {
-            this.grid.getField(position).update(map.ElementsAt(position));
+        Simulation activeSim = this.simulations.get(this.activeWorld);
+        activeSim.isBeingRendered = true;
+
+        IWorldMap activeMap = this.maps.get(this.activeWorld);
+        for (Vector2d position : activeMap.getUpdatedFields()) {
+            this.grid.getField(position).update(activeMap.ElementsAt(position));
         }
-        this.map.clearUpdatedFields();
+        activeMap.clearUpdatedFields();
+
+        activeSim.isBeingRendered = false;
+        synchronized (activeSim.renderPauseLock) {
+            activeSim.renderPauseLock.notifyAll();
+        }
     }
 
     private void reloadGrid() {
+        Simulation activeSim = this.simulations.get(this.activeWorld);
+        activeSim.isBeingRendered = true;
+
         this.grid.clear();
         this.grid.draw();
+
+        activeSim.isBeingRendered = false;
+        synchronized (activeSim.renderPauseLock) {
+            activeSim.renderPauseLock.notifyAll();
+        }
+    }
+
+    private void addWorld(IWorldMap map, Simulation simulation, String name) {
+        this.maps.put(name, map);
+        this.simulations.put(name, simulation);
+    }
+
+    private void startWorld(String name) {
+        Thread simThread = new Thread(this.simulations.get(name));
+        simThread.start();
+    }
+
+    private void setActiveWorld(String name) {
+        if (this.activeWorld == null) {
+            this.initSetActiveWorld(name);
+            return;
+        }
+        this.simulations.get(this.activeWorld).isDisplayed = false;
+        Simulation newSim = this.simulations.get(name);
+        newSim.isDisplayed = true;
+        this.activeWorld = name;
+        this.grid.setActiveMap(this.maps.get(this.activeWorld));
+        this.reloadGrid();
+        if (newSim.paused) this.pauseButton.setActive();
+        else this.pauseButton.setInactive();
+    }
+
+    private void initSetActiveWorld(String name) {
+        Simulation newSim = this.simulations.get(name);
+        newSim.isDisplayed = true;
+        this.activeWorld = name;
+        this.grid.setActiveMap(this.maps.get(this.activeWorld));
     }
 
 
-    public void init() {
-        this.map = new JungleMap(
+    public void initialize() {
+        ImageManager imageManager = new ImageManager();
+        imageManager.load();
+
+        JungleMap map1 = new JungleMap(
                 100,
                 30,
                 new Rect2D(
@@ -103,24 +166,38 @@ public class App extends Application {
                         new Vector2d(55, 20)
                 )
         );
-
-        ImageManager imageManager = new ImageManager();
-        imageManager.load();
-
-        this.activeSimulation = new Simulation(this, this.map, imageManager);
-        this.grid = new MapGridPane(map);
-
-        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,200, 1);
+        AnimalFactory animalFactory1 = new AnimalFactory(map1, imageManager,200, 1);
         for (int i = 0; i < 20; i++) {
-            Vector2d position = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
-            animalFactory.createPlace(position);
+            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map1, map1.getJungleBox());
+            animalFactory1.createPlace(position);
         }
-        this.updateGrid();
+        Simulation sim1 = new Simulation(this, map1, imageManager);
+        this.addWorld(map1, sim1, "map1");
+
+
+        JungleMap map2 = new JungleMap(
+                100,
+                30,
+                new Rect2D(
+                        new Vector2d(30, 10),
+                        new Vector2d(70, 10)
+                )
+        );
+        AnimalFactory animalFactory2 = new AnimalFactory(map2, imageManager,200, 1);
+        for (int i = 0; i < 40; i++) {
+            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map2, map2.getJungleBox());
+            animalFactory2.createPlace(position);
+        }
+        Simulation sim2 = new Simulation(this, map2, imageManager);
+        this.addWorld(map2, sim2, "map2");
+
+        this.grid = new MapGridPane(this.maps.get("map1"));
+        this.setActiveWorld("map1");
 
         this.gridUpdateThread = new Thread(this::syncUpdateGrid);
         this.gridUpdateThread.start();
 
-        this.simulationThread = new Thread(this.activeSimulation);
-        this.simulationThread.start();
+        this.startWorld("map1");
+        this.startWorld("map2");
     }
 }

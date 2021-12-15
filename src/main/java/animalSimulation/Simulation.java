@@ -10,8 +10,9 @@ public class Simulation implements Runnable {
     private final AnimalFactory animalFactory;
     private final PlantFactory plantFactory, junglePlantFactory;
     private App app;
-    public final Object pauseLock = new Object();
+    public final Object pausePauseLock, renderPauseLock;
     public boolean paused = false;
+    public boolean isDisplayed = false, isBeingRendered = false;
 
     public Simulation(App app, JungleMap map, ImageManager imageManager) {
         this.map = map;
@@ -19,6 +20,8 @@ public class Simulation implements Runnable {
         this.plantFactory = new PlantFactory(map, imageManager, false, 20);
         this.junglePlantFactory = new PlantFactory(map, imageManager, true, 20);
         this.app = app;
+        this.pausePauseLock = new Object();
+        this.renderPauseLock = new Object();
     }
 
     @Override
@@ -28,6 +31,13 @@ public class Simulation implements Runnable {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ignore) {}
+
+            // wait for App to finish drawing
+            if (this.isBeingRendered) synchronized (this.renderPauseLock) {
+                try {
+                    this.renderPauseLock.wait();
+                } catch (InterruptedException ignore) {}
+            }
 
             // remove dead bodies
             this.removeDead();
@@ -45,17 +55,15 @@ public class Simulation implements Runnable {
             this.growPlants();
 
             // enable map update
-            synchronized (this.app.gridUpdatePauseLock) {
+            if (this.isDisplayed) synchronized (this.app.gridUpdatePauseLock) {
                 this.app.gridUpdatePauseLock.notifyAll();
             }
-            if (this.paused) {
-                synchronized (this.pauseLock) {
-                    try {
-                        this.pauseLock.wait();
-                    } catch (InterruptedException ignore) {}
-                }
-            }
 
+            if (this.paused) synchronized (this.pausePauseLock) {
+                try {
+                    this.pausePauseLock.wait();
+                } catch (InterruptedException ignore) {}
+            }
         }
     }
 
