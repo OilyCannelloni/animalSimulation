@@ -25,14 +25,12 @@ public class App extends Application {
         this.initialize();
 
         ArrayList<SelectBoxButton> simSelectButtons = new ArrayList<>();
-        simSelectButtons.add(new SelectBoxButton((e) -> {
-            System.out.println("button 1");
-            this.setActiveWorld("map1");
-        }));
-        simSelectButtons.add(new SelectBoxButton((e) -> {
-            System.out.println("button 2");
-            this.setActiveWorld("map2");
-        }));
+        for (String worldName : this.maps.keySet()) {
+            simSelectButtons.add(new SelectBoxButton(
+                    worldName,
+                    (e) -> this.setActiveWorld(worldName)
+            ));
+        }
 
         HSelectBox simulationSelect = new HSelectBox(
                 400,
@@ -154,7 +152,7 @@ public class App extends Application {
     }
 
 
-    public void initialize() {
+    private void initialize() {
         ImageManager imageManager = new ImageManager();
         imageManager.load();
 
@@ -180,7 +178,7 @@ public class App extends Application {
                 30,
                 new Rect2D(
                         new Vector2d(30, 10),
-                        new Vector2d(70, 10)
+                        new Vector2d(70, 20)
                 )
         );
         AnimalFactory animalFactory2 = new AnimalFactory(map2, imageManager,200, 1);
@@ -191,6 +189,24 @@ public class App extends Application {
         Simulation sim2 = new Simulation(this, map2, imageManager);
         this.addWorld(map2, sim2, "map2");
 
+
+        JungleMap map3 = new JungleMap(
+                100,
+                30,
+                new Rect2D(
+                        new Vector2d(0, 0),
+                        new Vector2d(15, 15)
+                )
+        );
+        AnimalFactory animalFactory3 = new AnimalFactory(map3, imageManager,200, 1);
+        for (int i = 0; i < 40; i++) {
+            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map3, map3.getJungleBox());
+            animalFactory3.createPlace(position);
+        }
+        Simulation sim3 = new Simulation(this, map3, imageManager);
+        this.addWorld(map3, sim3, "map3");
+
+
         this.grid = new MapGridPane(this.maps.get("map1"));
         this.setActiveWorld("map1");
 
@@ -199,5 +215,6 @@ public class App extends Application {
 
         this.startWorld("map1");
         this.startWorld("map2");
+        this.startWorld("map3");
     }
 }
