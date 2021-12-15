@@ -96,10 +96,6 @@ public final class Animal extends AbstractMovableElement {
             this.facing = this.facing.rotate(delta);
             this.map.updateField(this.position);
         }
-    }
-
-    @Override
-    protected void onMove(){
         this.energy -= this.moveEnergy;
     }
 }

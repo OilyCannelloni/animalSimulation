@@ -2,15 +2,16 @@ package animalSimulation.gui;
 
 import animalSimulation.*;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
     public JungleMap map;
     public MapGridPane grid;
-    private int epochs = Integer.MAX_VALUE;
-    private Engine engine;
+    private final int epochs = Integer.MAX_VALUE;
+    private Simulation simulation;
+    public Thread simulationThread, gridUpdateThread;
+    public final Object gridUpdatePauseLock = new Object();
 
     @Override
     public void start(Stage primaryStage) {
@@ -21,37 +22,42 @@ public class App extends Application {
                 this.grid.getDimensions().y
         );
 
-        Thread thread = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(100);
-                    Platform.runLater(this::processTurn);
-                } catch (InterruptedException ignore) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
+        this.gridUpdateThread = new Thread(this::syncUpdateGrid);
+        this.gridUpdateThread.start();
 
-        thread.setDaemon(true);
-        thread.start();
+        this.simulationThread = new Thread(this.simulation);
+        this.simulationThread.start();
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
 
-    private void processTurn() {
-        // apply simulation
-        this.engine.processTurn();
+    private void syncUpdateGrid() {
+        while (true) {
+            // sleep
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) {}
 
-        // update map
+            // wait for simulation turn to complete
+            synchronized (this.gridUpdatePauseLock) {
+                try {
+                    this.gridUpdatePauseLock.wait();
+                } catch (InterruptedException ignore) {}
+
+                this.updateGrid();
+            }
+        }
+    }
+
+    private void updateGrid() {
         for (Vector2d position : this.map.getUpdatedFields()) {
             this.grid.getField(position).update(map.ElementsAt(position));
         }
-
-        // tidy up
-        this.engine.endTurn();
+        this.map.clearUpdatedFields();
     }
+
 
     public void init() {
         this.map = new JungleMap(
@@ -66,13 +72,14 @@ public class App extends Application {
         ImageManager imageManager = new ImageManager();
         imageManager.load();
 
-        this.engine = new Engine(this.map, imageManager);
+        this.simulation = new Simulation(this, this.map, imageManager);
         this.grid = new MapGridPane(map);
 
-        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,50, 1);
+        AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,200, 1);
         for (int i = 0; i < 20; i++) {
             Vector2d position = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
             animalFactory.createPlace(position);
         }
+        this.updateGrid();
     }
 }

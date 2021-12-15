@@ -1,40 +1,59 @@
 package animalSimulation;
 
+import animalSimulation.gui.App;
 import animalSimulation.gui.ImageManager;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
-public class Engine {
+public class Simulation implements Runnable {
     private final JungleMap map;
     private final AnimalFactory animalFactory;
     private final PlantFactory plantFactory, junglePlantFactory;
+    private App app;
+    private volatile boolean paused;
+    private final Object pauseLock = new Object();
 
-    public Engine(JungleMap map, ImageManager imageManager) {
+    public Simulation(App app, JungleMap map, ImageManager imageManager) {
         this.map = map;
-        LinkedList<IPositionChangeObserver> observers = new LinkedList<>();
         this.animalFactory = new AnimalFactory(map, imageManager, 50, 1);
         this.plantFactory = new PlantFactory(map, imageManager, false, 20);
         this.junglePlantFactory = new PlantFactory(map, imageManager, true, 20);
+        this.app = app;
+        this.paused = false;
     }
 
-    public void processTurn() {
-        // remove dead bodies
-        this.removeDead();
+    @Override
+    public void run() {
+        while (true) {
+            // wait
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) {}
 
-        // turn and move animals
-        this.makeAnimalMoves();
+            // remove dead bodies
+            this.removeDead();
 
-        // eat plants
-        this.eatPlants();
+            // turn and move animals
+            this.makeAnimalMoves();
 
-        // reproduce animals
-        this.reproduceAnimals();
+            // eat plants
+            this.eatPlants();
 
-        // place plants
-        this.growPlants();
+            // reproduce animals
+            this.reproduceAnimals();
+
+            // place plants
+            this.growPlants();
+
+            // enable map update
+            synchronized (this.app.gridUpdatePauseLock) {
+                this.app.gridUpdatePauseLock.notifyAll();
+            }
+        }
+    }
+
+    public void pause() {
+        this.paused = true;
     }
 
     private void reproduceAnimals() {
@@ -54,7 +73,7 @@ public class Engine {
 
             Animal a1 = animals.removeLast(), a2 = animals.removeLast();
 
-            if (a2.getEnergy() > animalFactory.startEnergy / 2){
+            if (a2.getEnergy() > animalFactory.startEnergy / 1.4){
                 newAnimals.add(this.animalFactory.create(a1, a2));
             }
         }
@@ -131,9 +150,5 @@ public class Engine {
             }
         }
         return res;
-    }
-
-    public void endTurn() {
-        this.map.clearUpdatedFields();
     }
 }
