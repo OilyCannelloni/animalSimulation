@@ -3,7 +3,6 @@ package animalSimulation.gui;
 import animalSimulation.IMapElement;
 import animalSimulation.IWorldMap;
 import animalSimulation.Vector2d;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 import java.util.LinkedList;
@@ -11,6 +10,7 @@ import java.util.Map;
 
 public class MapGridPane extends GridPane {
     private IWorldMap map;
+    private LinkedList<IWorldMap> maps;
     private MapGridPaneField[][] fields;
     private final Vector2d dimensions, nSquares, fieldDimensions = new Vector2d(18, 18);
     private final ImageManager imageManager;

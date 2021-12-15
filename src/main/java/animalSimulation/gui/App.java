@@ -8,12 +8,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class App extends Application {
     public JungleMap map;
     public MapGridPane grid;
     private final int epochs = Integer.MAX_VALUE;
-    private Simulation simulation;
+    private Simulation activeSimulation;
     public Thread simulationThread, gridUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
 
@@ -33,7 +34,14 @@ public class App extends Application {
         );
 
         ToggleButton pauseButton = new ToggleButton(
-                (e) -> System.out.println("pauseButton"),
+                (e) -> {
+                    System.out.println("pauseButton");
+                    this.activeSimulation.togglePause();
+                    synchronized (this.activeSimulation.pauseLock) {
+                        this.activeSimulation.pauseLock.notifyAll();
+                    }
+                    if (this.activeSimulation.paused) this.reloadGrid();
+                },
                 "Unpause Simulation",
                 "Pause Simulation"
         );
@@ -80,6 +88,11 @@ public class App extends Application {
         this.map.clearUpdatedFields();
     }
 
+    private void reloadGrid() {
+        this.grid.clear();
+        this.grid.draw();
+    }
+
 
     public void init() {
         this.map = new JungleMap(
@@ -94,7 +107,7 @@ public class App extends Application {
         ImageManager imageManager = new ImageManager();
         imageManager.load();
 
-        this.simulation = new Simulation(this, this.map, imageManager);
+        this.activeSimulation = new Simulation(this, this.map, imageManager);
         this.grid = new MapGridPane(map);
 
         AnimalFactory animalFactory = new AnimalFactory(this.map, imageManager,200, 1);
@@ -107,7 +120,7 @@ public class App extends Application {
         this.gridUpdateThread = new Thread(this::syncUpdateGrid);
         this.gridUpdateThread.start();
 
-        this.simulationThread = new Thread(this.simulation);
+        this.simulationThread = new Thread(this.activeSimulation);
         this.simulationThread.start();
     }
 }

@@ -10,8 +10,8 @@ public class Simulation implements Runnable {
     private final AnimalFactory animalFactory;
     private final PlantFactory plantFactory, junglePlantFactory;
     private App app;
-    private volatile boolean paused;
-    private final Object pauseLock = new Object();
+    public final Object pauseLock = new Object();
+    public boolean paused = false;
 
     public Simulation(App app, JungleMap map, ImageManager imageManager) {
         this.map = map;
@@ -19,7 +19,6 @@ public class Simulation implements Runnable {
         this.plantFactory = new PlantFactory(map, imageManager, false, 20);
         this.junglePlantFactory = new PlantFactory(map, imageManager, true, 20);
         this.app = app;
-        this.paused = false;
     }
 
     @Override
@@ -49,11 +48,19 @@ public class Simulation implements Runnable {
             synchronized (this.app.gridUpdatePauseLock) {
                 this.app.gridUpdatePauseLock.notifyAll();
             }
+            if (this.paused) {
+                synchronized (this.pauseLock) {
+                    try {
+                        this.pauseLock.wait();
+                    } catch (InterruptedException ignore) {}
+                }
+            }
+
         }
     }
 
-    public void pause() {
-        this.paused = true;
+    public void togglePause() {
+        this.paused = !this.paused;
     }
 
     private void reproduceAnimals() {
