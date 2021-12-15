@@ -3,7 +3,11 @@ package animalSimulation.gui;
 import animalSimulation.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 public class App extends Application {
     public JungleMap map;
@@ -16,17 +20,35 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.init();
-        Scene scene = new Scene(
-                this.grid,
-                this.grid.getDimensions().x,
-                this.grid.getDimensions().y
+
+
+        ArrayList<SelectBoxButton> simSelectButtons = new ArrayList<>();
+        simSelectButtons.add(new SelectBoxButton((e) -> System.out.println("button 1")));
+        simSelectButtons.add(new SelectBoxButton((e) -> System.out.println("button 2")));
+
+        HSelectBox simulationSelect = new HSelectBox(
+                400,
+                200,
+                simSelectButtons
         );
 
-        this.gridUpdateThread = new Thread(this::syncUpdateGrid);
-        this.gridUpdateThread.start();
+        ToggleButton pauseButton = new ToggleButton(
+                (e) -> System.out.println("pauseButton"),
+                "Unpause Simulation",
+                "Pause Simulation"
+        );
 
-        this.simulationThread = new Thread(this.simulation);
-        this.simulationThread.start();
+        VBox controlBox = new VBox(simulationSelect, pauseButton);
+        VBox statBox = new VBox();
+        VBox graphBox = new VBox();
+
+        HBox optionsBox = new HBox(controlBox, statBox, graphBox);
+
+        VBox SceneVBox = new VBox(this.grid, optionsBox);
+
+        Scene scene = new Scene(
+                SceneVBox
+        );
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -81,5 +103,11 @@ public class App extends Application {
             animalFactory.createPlace(position);
         }
         this.updateGrid();
+
+        this.gridUpdateThread = new Thread(this::syncUpdateGrid);
+        this.gridUpdateThread.start();
+
+        this.simulationThread = new Thread(this.simulation);
+        this.simulationThread.start();
     }
 }
