@@ -56,6 +56,8 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         int energyTransfer1 = parent1.getEnergy() / 4, energyTransfer2 = parent2.getEnergy() / 4;
         parent1.addEnergy(-energyTransfer1);
         parent2.addEnergy(-energyTransfer2);
+        parent1.childCount++;
+        parent2.childCount++;
 
         return new Animal(
                 this.map,

@@ -14,6 +14,9 @@ public class Simulation implements Runnable {
     public boolean paused = false;
     public boolean isDisplayed = false, isBeingRendered = false;
 
+    public SimulationStatistics statistics;
+    private EpochStatistics epochStatistics;
+
     public Simulation(App app, JungleMap map, ImageManager imageManager) {
         this.map = map;
         this.animalFactory = new AnimalFactory(map, imageManager, 50, 1);
@@ -22,6 +25,7 @@ public class Simulation implements Runnable {
         this.app = app;
         this.pausePauseLock = new Object();
         this.renderPauseLock = new Object();
+        this.statistics = new SimulationStatistics();
     }
 
     @Override
@@ -39,6 +43,9 @@ public class Simulation implements Runnable {
                 } catch (InterruptedException ignore) {}
             }
 
+            // initialize statistics
+            this.epochStatistics = new EpochStatistics();
+
             // remove dead bodies
             this.removeDead();
 
@@ -53,6 +60,10 @@ public class Simulation implements Runnable {
 
             // place plants
             this.growPlants();
+
+            // update stats
+            this.epochStatistics.update();
+            this.statistics.update(this.epochStatistics);
 
             // enable map update
             if (this.isDisplayed) synchronized (this.app.gridUpdatePauseLock) {
@@ -94,13 +105,17 @@ public class Simulation implements Runnable {
         }
 
         newAnimals.forEach(this.map::placeElement);
+        this.epochStatistics.epochBornCount += newAnimals.size();
     }
 
     private void makeAnimalMoves() {
         for (IMovableElement e : this.map.getMovableElements()) {
             if (e instanceof Animal) {
                 Animal a = (Animal) e;
+                this.epochStatistics.epochTotalEnergy += a.getEnergy();
+                this.epochStatistics.epochTotalChildCount += a.childCount;
                 a.makeMove();
+                this.epochStatistics.epochAnimalCount++;
             }
         }
     }
@@ -109,16 +124,26 @@ public class Simulation implements Runnable {
         for (IMovableElement e : this.map.getMovableElements()) {
             if (e instanceof Animal) {
                 Animal a = (Animal) e;
-                if (a.getEnergy() <= 0) map.removeElement(a);
+                if (a.getEnergy() <= 0) {
+                    this.epochStatistics.epochDeadCount++;
+                    this.epochStatistics.epochTotalDeadLifespan += a.lifespan;
+                    map.removeElement(a);
+                }
             }
         }
     }
 
     private void growPlants() {
         Vector2d jungleField = Algorithm.getRandomEmptyField(this.map, this.map.getJungleBox());
-        if (jungleField != null) this.junglePlantFactory.createPlace(jungleField);
+        if (jungleField != null) {
+            this.junglePlantFactory.createPlace(jungleField);
+            this.epochStatistics.epochNewPlants++;
+        }
         Vector2d plantField = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
-        if (plantField != null) this.plantFactory.createPlace(plantField);
+        if (plantField != null) {
+            this.plantFactory.createPlace(plantField);
+            this.epochStatistics.epochNewPlants++;
+        }
     }
 
     private void eatPlants() {
@@ -154,6 +179,7 @@ public class Simulation implements Runnable {
             bestAnimals.forEach((Animal a) -> a.addEnergy(eatEnergy));
 
             this.map.removeElement(plant);
+            this.epochStatistics.epochEatenPlants++;
         }
     }
 

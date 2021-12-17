@@ -42,7 +42,7 @@ public class MapGridPane extends GridPane {
         for (int i = 0; i < this.nSquares.y; i++)
             this.getRowConstraints().add(new RowConstraints(this.fieldDimensions.y));
 
-        this.setGridLinesVisible(true);
+        this.setGridLinesVisible(false);
 
         this.setBackground(new Background(new BackgroundImage(
                 this.imageManager.getImage("jungle_background.png"),
@@ -60,6 +60,14 @@ public class MapGridPane extends GridPane {
     public void draw() {
         for (Map.Entry<Vector2d, LinkedList<IMapElement>> entry : map.getElements().entrySet()) {
             this.getField(entry.getKey()).update(entry.getValue());
+        }
+    }
+
+    public void drawAll() {
+        for (int i = 0; i < this.nSquares.x; i++) {
+            for (int j = 0; j < this.nSquares.y; j++) {
+                this.fields[i][j].update(this.map.ElementsAt(new Vector2d(i, j)));
+            }
         }
     }
 

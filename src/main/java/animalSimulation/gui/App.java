@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,7 +17,8 @@ public class App extends Application {
     private final int epochs = Integer.MAX_VALUE;
     private String activeWorld;
     private HashMap<String, Simulation> simulations = new HashMap<>();
-    public Thread gridUpdateThread;
+    private HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
+    public Thread guiUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton;
 
@@ -54,10 +56,20 @@ public class App extends Application {
         );
 
         VBox controlBox = new VBox(simulationSelect, this.pauseButton);
-        VBox statBox = new VBox();
-        VBox graphBox = new VBox();
 
-        HBox optionsBox = new HBox(controlBox, statBox, graphBox);
+        // Statistics
+        for (Field f : SimulationStatistics.class.getFields()) {
+            if (f.getType().equals(Long.TYPE) || f.getType().equals(int[].class) || f.getType().equals(Float.TYPE))
+                this.statDisplayBoxes.put(f.getName(), new StatDisplayBox(f.getName()));
+        }
+        VBox statBox = new VBox();
+        statBox.getChildren().addAll(this.statDisplayBoxes.values());
+
+
+        VBox graphBox = new VBox();
+        VBox TrackBox = new VBox();
+
+        HBox optionsBox = new HBox(controlBox, statBox, graphBox, TrackBox);
 
         VBox SceneVBox = new VBox(this.grid, optionsBox);
 
@@ -71,8 +83,17 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    private void updateStatistics() {
+        for (String fieldName : this.statDisplayBoxes.keySet()) {
+            SimulationStatistics stats = this.simulations.get(this.activeWorld).statistics;
+            try {
+                Field f = stats.getClass().getField(fieldName);
+                this.statDisplayBoxes.get(fieldName).setValue(f.get(stats).toString());
+            } catch (NoSuchFieldException | IllegalAccessException ignore) {}
+        }
+    }
 
-    private void syncUpdateGrid() {
+    private void updateGui() {
         while (true) {
             // sleep
             try {
@@ -87,6 +108,8 @@ public class App extends Application {
 
                 this.updateGrid();
             }
+
+            this.updateStatistics();
         }
     }
 
@@ -111,7 +134,7 @@ public class App extends Application {
         activeSim.isBeingRendered = true;
 
         this.grid.clear();
-        this.grid.draw();
+        this.grid.drawAll();
 
         activeSim.isBeingRendered = false;
         synchronized (activeSim.renderPauseLock) {
@@ -210,8 +233,8 @@ public class App extends Application {
         this.grid = new MapGridPane(this.maps.get("map1"));
         this.setActiveWorld("map1");
 
-        this.gridUpdateThread = new Thread(this::syncUpdateGrid);
-        this.gridUpdateThread.start();
+        this.guiUpdateThread = new Thread(this::updateGui);
+        this.guiUpdateThread.start();
 
         this.startWorld("map1");
         this.startWorld("map2");

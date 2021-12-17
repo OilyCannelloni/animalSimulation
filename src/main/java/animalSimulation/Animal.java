@@ -36,6 +36,8 @@ public final class Animal extends AbstractMovableElement {
     private final int[] genome;
     private HashMap<FacingEnergyPair, Image> images;
     private final ImageManager imageManager;
+    public int lifespan;
+    public int childCount;
 
     public Animal(
             IWorldMap map,
@@ -54,6 +56,8 @@ public final class Animal extends AbstractMovableElement {
         this.moveEnergy = moveEnergy;
         this.genome = genome;
         this.initGraphics();
+        this.lifespan = 0;
+        this.childCount = 0;
     }
 
     private void initGraphics() {
@@ -97,6 +101,7 @@ public final class Animal extends AbstractMovableElement {
             this.map.updateField(this.position);
         }
         this.energy -= this.moveEnergy;
+        this.lifespan++;
     }
 }
 
