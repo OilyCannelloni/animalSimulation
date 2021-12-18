@@ -27,4 +27,6 @@ public interface IWorldMap extends IActionObserver {
     HashSet<Vector2d> getUpdatedFields();
 
     void clearUpdatedFields();
+
+    void removeAllElementsOfType(Class<?> cls);
 }

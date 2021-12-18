@@ -9,10 +9,12 @@ public class ImageManager {
     public static String
             IMAGE_PATH = "file:.\\src\\main\\resources\\images\\",
             mapBackground = "jungle_background.png",
-            trackingCircle = "tracked.png";
+            trackingCircle = "tracked.png",
+            highlightCircle = "highlighted.png";
 
     public static Image
-            trackingCircleImage = new Image(IMAGE_PATH + trackingCircle);
+            trackingCircleImage = new Image(IMAGE_PATH + trackingCircle),
+            highlightCircleImage = new Image(IMAGE_PATH + highlightCircle);
 
     HashMap<String, Image> images;
 

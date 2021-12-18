@@ -1,15 +1,19 @@
 package animalSimulation;
 
+import animalSimulation.gui.App;
+
 import java.util.HashSet;
 
 public class AnimalTracker extends ActionObserver {
+    private App app;
     private Animal animal;
     private final IWorldMap map;
     private int totalChildren = 0;
     private final HashSet<Animal> descendants;
     private TrackingCircle trackingCircle;
 
-    public AnimalTracker(Animal animal) {
+    public AnimalTracker(App app, Animal animal) {
+        this.app = app;
         this.animal = animal;
         this.map = animal.map;
         this.descendants = new HashSet<>();
@@ -22,12 +26,19 @@ public class AnimalTracker extends ActionObserver {
     public void setAnimal(Animal animal) {
         this.animal.removeObserver(this);
         this.map.removeElement(this.trackingCircle);
+
+        Vector2d oldCirclePosition = this.trackingCircle.getPosition();
+        this.app.grid.getField(oldCirclePosition).update(this.map.ElementsAt(oldCirclePosition));
+
         this.animal = animal;
         this.descendants.clear();
         this.descendants.add(animal);
         this.animal.addObserver(this);
         this.trackingCircle = new TrackingCircle(this.map, animal.getPosition());
         this.map.placeElement(this.trackingCircle);
+
+        Vector2d newCirclePosition = this.trackingCircle.getPosition();
+        this.app.grid.getField(newCirclePosition).update(this.map.ElementsAt(newCirclePosition));
     }
 
     @Override
@@ -63,6 +74,10 @@ public class AnimalTracker extends ActionObserver {
                 map.placeElement(this.trackingCircle);
             }
         }
+    }
+
+    public Vector2d getCirclePosition() {
+        return this.trackingCircle.getPosition();
     }
 
     public AnimalStatistics getAnimalStatistics() {

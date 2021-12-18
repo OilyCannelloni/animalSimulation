@@ -2,6 +2,7 @@ package animalSimulation;
 
 import animalSimulation.gui.App;
 import animalSimulation.gui.ImageManager;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ public class Simulation implements Runnable {
         this.pausePauseLock = new Object();
         this.renderPauseLock = new Object();
         this.statistics = new SimulationStatistics();
-        this.tracker = new AnimalTracker(Algorithm.getRandomAnimal(map));
+        this.tracker = new AnimalTracker(app, Algorithm.getRandomAnimal(map));
         this.animalFactory.factoryObservers.add(this.tracker);
     }
 
@@ -91,26 +92,9 @@ public class Simulation implements Runnable {
     }
 
     private int[] getDominantGenome() {
-        LinkedHashMap<int[], Integer> genomeCount = new LinkedHashMap<>();
-        for (IMovableElement me : this.map.getMovableElements()) {
-            if (me instanceof Animal) {
-                Animal a = (Animal) me;
-                int[] genome = a.getGenome();
-                Arrays.sort(genome);
-                if (genomeCount.get(genome) == null) genomeCount.put(genome, 1);
-                else genomeCount.merge(genome, 1, Integer::sum);
-            }
-        }
-
-        if (genomeCount.isEmpty()) {
-            int[] ret = new int[32];
-            Arrays.fill(ret, 0);
-            return ret;
-        }
-
-        Map.Entry<int[], Integer> maxEntry = Collections.max(genomeCount.entrySet(), Map.Entry.comparingByValue());
-        this.epochStatistics.epochDominantGenomeCount = maxEntry.getValue();
-        return maxEntry.getKey();
+        Pair<int[], LinkedList<Animal>> dominantAnimals = Algorithm.getDominantGenomeAnimals(this.map);
+        this.epochStatistics.epochDominantGenomeCount = dominantAnimals.getValue().size();
+        return dominantAnimals.getKey();
     }
 
 

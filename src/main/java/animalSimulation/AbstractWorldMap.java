@@ -139,4 +139,19 @@ public abstract class AbstractWorldMap implements IWorldMap {
     public void clearUpdatedFields() {
         this.updatedFields.clear();
     }
+
+    @Override
+    public void removeAllElementsOfType(Class<?> cls) {
+        LinkedList<IMapElement> toRemove = new LinkedList<>();
+        for (LinkedList<IMapElement> elements : this.getElements().values()) {
+            for (IMapElement element : elements) {
+                if (element.getClass() == cls) {
+                    toRemove.add(element);
+                }
+            }
+        }
+        for (IMapElement element : toRemove) {
+            this.removeElement(element);
+        }
+    }
 }

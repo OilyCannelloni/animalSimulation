@@ -1,8 +1,8 @@
 package animalSimulation;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Random;
+import javafx.util.Pair;
+
+import java.util.*;
 
 public class Algorithm {
     public static final Random random = new Random(System.currentTimeMillis());
@@ -122,5 +122,31 @@ public class Algorithm {
             }
         }
         return bestAnimal;
+    }
+
+    public static Pair<int[], LinkedList<Animal>> getDominantGenomeAnimals(IWorldMap map) {
+        LinkedHashMap<int[], LinkedList<Animal>> animalsWithGenome = new LinkedHashMap<>();
+
+        for (IMovableElement me : map.getMovableElements()) {
+            if (me instanceof Animal) {
+                Animal a = (Animal) me;
+                int[] genome = a.getGenome();
+                Arrays.sort(genome);
+                animalsWithGenome.putIfAbsent(genome, new LinkedList<>());
+                animalsWithGenome.get(genome).add(a);
+            }
+        }
+
+        if (animalsWithGenome.isEmpty()) {
+            int[] ret = new int[32];
+            Arrays.fill(ret, 0);
+            return new Pair<>(ret, new LinkedList<>());
+        }
+
+        Map.Entry<int[], LinkedList<Animal>> maxEntry = Collections.max(
+                animalsWithGenome.entrySet(),
+                Map.Entry.comparingByValue(Comparator.comparingInt(LinkedList::size))
+        );
+        return new Pair<>(maxEntry.getKey(), maxEntry.getValue());
     }
 }

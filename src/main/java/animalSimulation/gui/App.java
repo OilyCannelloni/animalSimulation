@@ -3,14 +3,18 @@ package animalSimulation.gui;
 import animalSimulation.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class App extends Application {
     public HashMap<String, IWorldMap> maps = new HashMap<>();
@@ -22,7 +26,7 @@ public class App extends Application {
     private final HashMap<String, StatDisplayBox> trackStatDisplayBoxes = new HashMap<>();
     public Thread guiUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
-    private ToggleButton pauseButton;
+    private ToggleButton pauseButton, dominantGenomeSelectButton;
 
     @Override
     public void start(Stage primaryStage) {
@@ -48,6 +52,8 @@ public class App extends Application {
                     Simulation sim = this.simulations.get(this.activeWorld);
                     sim.togglePause();
                     if (!sim.paused) synchronized (sim.pausePauseLock) {
+                        this.getActiveMap().removeAllElementsOfType(HighlightCircle.class);
+                        this.dominantGenomeSelectButton.setInactive();
                         sim.pausePauseLock.notifyAll();
                     }
                     if (sim.paused) this.reloadGrid();
@@ -57,7 +63,27 @@ public class App extends Application {
                 "Pause Simulation"
         );
 
-        VBox controlBox = new VBox(simulationSelect, this.pauseButton);
+        this.dominantGenomeSelectButton = new ToggleButton(
+                (e) -> {
+                    System.out.println("highlightButton");
+                    if (!this.pauseButton.isActive) return;
+                    IWorldMap activeMap = this.getActiveMap();
+
+                    Pair<int[], LinkedList<Animal>> dominantAnimals =
+                            Algorithm.getDominantGenomeAnimals(activeMap);
+                    System.out.println(dominantAnimals.getValue().size());
+                    for (Animal animal : dominantAnimals.getValue()) {
+                        Vector2d position = animal.getPosition();
+                        activeMap.placeElement(new HighlightCircle(activeMap, position));
+                        this.grid.getField(position).update(activeMap.ElementsAt(position));
+                    }
+                },
+                "Show animals with dominant genome",
+                "Show animals with dominant genome"
+        );
+
+
+        VBox controlBox = new VBox(simulationSelect, this.pauseButton, this.dominantGenomeSelectButton);
 
         // Statistics
         for (Field f : SimulationStatistics.class.getFields()) {
@@ -91,7 +117,7 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    private void updateStatistics() {
+    public void updateStatistics() {
         SimulationStatistics stats = this.simulations.get(this.activeWorld).statistics;
         for (String fieldName : this.statDisplayBoxes.keySet()) {
             try {
