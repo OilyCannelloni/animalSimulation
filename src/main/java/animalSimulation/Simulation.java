@@ -11,7 +11,7 @@ public class Simulation implements Runnable {
     private final PlantFactory plantFactory, junglePlantFactory;
     public AnimalTracker tracker;
 
-    private App app;
+    private final App app;
     public final Object pausePauseLock, renderPauseLock;
     public boolean paused = false;
     public boolean isDisplayed = false, isBeingRendered = false;
@@ -84,9 +84,9 @@ public class Simulation implements Runnable {
         }
     }
 
-    private void setTracker(Animal animal) {
+    public void setTracker(Animal animal) {
         this.animalFactory.factoryObservers.remove(this.tracker);
-        this.tracker = new AnimalTracker(animal);
+        this.tracker.setAnimal(animal);
         this.animalFactory.factoryObservers.add(this.tracker);
     }
 

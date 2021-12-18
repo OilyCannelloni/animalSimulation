@@ -10,13 +10,15 @@ import java.util.Map;
 
 public class MapGridPane extends GridPane {
     private IWorldMap map;
+    private final App app;
     private MapGridPaneField[][] fields;
     private Vector2d nSquares;
     private final Vector2d fieldDimensions = new Vector2d(18, 18);
     private final ImageManager imageManager;
 
-    public MapGridPane(IWorldMap map) {
+    public MapGridPane(App app, IWorldMap map) {
         super();
+        this.app = app;
         this.map = map;
         this.imageManager = new ImageManager();
         this.nSquares = map.getBoundingBox().getDimensions();
@@ -32,7 +34,7 @@ public class MapGridPane extends GridPane {
     private void configureGrid() {
         for (int i = 0; i < this.nSquares.x; i++) {
             for (int j = 0; j < this.nSquares.y; j++) {
-                this.fields[i][j] = new MapGridPaneField();
+                this.fields[i][j] = new MapGridPaneField(this.app, new Vector2d(i, j));
                 this.add(this.fields[i][j], i, j, 1, 1);
             }
         }

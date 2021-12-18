@@ -1,7 +1,11 @@
 package animalSimulation.gui;
 
+import animalSimulation.Algorithm;
+import animalSimulation.Animal;
 import animalSimulation.IMapElement;
+import animalSimulation.Vector2d;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 import java.util.LinkedList;
@@ -9,9 +13,13 @@ import java.util.ListIterator;
 
 public class MapGridPaneField extends StackPane {
     private final LinkedList<ImageView> imageViews;
+    private final App app;
+    private final Vector2d position;
 
-    public MapGridPaneField() {
+    public MapGridPaneField(App app, Vector2d position) {
         super();
+        this.app = app;
+        this.position = position;
         this.imageViews = new LinkedList<>();
         int MAX_IMAGE_VIEWS = 9;
         for (int i = 0; i < MAX_IMAGE_VIEWS; i++) {
@@ -19,6 +27,14 @@ public class MapGridPaneField extends StackPane {
             this.imageViews.add(iv);
             this.getChildren().add(iv);
         }
+        this.setOnMouseClicked(this::onClick);
+    }
+
+    private void onClick(MouseEvent mouseEvent) {
+        LinkedList<IMapElement> elementsAtField = this.app.getActiveMap().ElementsAt(this.position);
+        Animal bestAnimal = Algorithm.getStrongestAnimal(elementsAtField);
+        if (bestAnimal == null) return;
+        this.app.getActiveSimulation().setTracker(bestAnimal);
     }
 
     public void clear() {

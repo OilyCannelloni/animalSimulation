@@ -256,7 +256,7 @@ public class App extends Application {
         this.addWorld(map3, sim3, "map3");
 
 
-        this.grid = new MapGridPane(this.maps.get("map1"));
+        this.grid = new MapGridPane(this, this.maps.get("map1"));
         this.setActiveWorld("map1");
 
         this.guiUpdateThread = new Thread(this::updateGui);
@@ -265,5 +265,13 @@ public class App extends Application {
         this.startWorld("map1");
         this.startWorld("map2");
         this.startWorld("map3");
+    }
+
+    public Simulation getActiveSimulation() {
+        return this.simulations.get(this.activeWorld);
+    }
+
+    public IWorldMap getActiveMap() {
+        return this.maps.get(this.activeWorld);
     }
 }

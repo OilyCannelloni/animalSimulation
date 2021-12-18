@@ -3,7 +3,7 @@ package animalSimulation;
 import java.util.HashSet;
 
 public class AnimalTracker extends ActionObserver {
-    private final Animal animal;
+    private Animal animal;
     private final IWorldMap map;
     private int totalChildren = 0;
     private final HashSet<Animal> descendants;
@@ -13,6 +13,17 @@ public class AnimalTracker extends ActionObserver {
         this.animal = animal;
         this.map = animal.map;
         this.descendants = new HashSet<>();
+        this.descendants.add(animal);
+        this.animal.addObserver(this);
+        this.trackingCircle = new TrackingCircle(this.map, animal.getPosition());
+        this.map.placeElement(this.trackingCircle);
+    }
+
+    public void setAnimal(Animal animal) {
+        this.animal.removeObserver(this);
+        this.map.removeElement(this.trackingCircle);
+        this.animal = animal;
+        this.descendants.clear();
         this.descendants.add(animal);
         this.animal.addObserver(this);
         this.trackingCircle = new TrackingCircle(this.map, animal.getPosition());
@@ -32,7 +43,8 @@ public class AnimalTracker extends ActionObserver {
     public void animalDied(Animal animal) {
         this.descendants.remove(animal);
         if (animal == this.animal) {
-            map.removeElement(this.trackingCircle);
+            this.animal.removeObserver(this);
+            this.map.removeElement(this.trackingCircle);
         }
     }
 

@@ -107,4 +107,20 @@ public class Algorithm {
         LinkedList<Animal> animals = getAnimals(map);
         return animals.get(random.nextInt(animals.size()));
     }
+
+    public static Animal getStrongestAnimal(LinkedList<IMapElement> elements) {
+        if (elements == null) return null;
+        Animal bestAnimal = null;
+        int bestEnergy = -1;
+        for (IMapElement element : elements) {
+            if (element instanceof Animal) {
+                Animal a = (Animal) element;
+                if (a.getEnergy() > bestEnergy) {
+                    bestEnergy = a.getEnergy();
+                    bestAnimal = a;
+                }
+            }
+        }
+        return bestAnimal;
+    }
 }
