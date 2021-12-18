@@ -13,7 +13,6 @@ public class AnimalTracker extends ActionObserver {
         this.map = animal.map;
         this.descendants = new HashSet<>();
         this.descendants.add(animal);
-
         this.animal.addObserver(this);
     }
 
@@ -36,7 +35,15 @@ public class AnimalTracker extends ActionObserver {
         return s == 0 ? 0 : s - 1;
     }
 
-    public int getTotalChildren() {
-        return this.totalChildren;
+    public AnimalStatistics getAnimalStatistics() {
+        if (this.animal == null) return new AnimalStatistics();
+
+        AnimalStatistics stats = new AnimalStatistics();
+        stats.aliveDescendantCount = this.getDescendantCount();
+        stats.diedEpoch = this.animal.deathEpoch;
+        stats.childCount = this.totalChildren;
+        stats.genome = this.animal.getGenome();
+        stats.position = this.animal.getPosition();
+        return stats;
     }
 }

@@ -1,6 +1,7 @@
 package animalSimulation;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Algorithm {
@@ -89,5 +90,21 @@ public class Algorithm {
             position = getRandomEmptyField(map);
         } while (region.contains(position));
         return position;
+    }
+
+    public static LinkedList<Animal> getAnimals(IWorldMap map) {
+        LinkedList<Animal> animals = new LinkedList<>();
+        for (IMovableElement me : map.getMovableElements()) {
+            if (me instanceof Animal) {
+                Animal a = (Animal) me;
+                animals.add(a);
+            }
+        }
+        return animals;
+    }
+
+    public static Animal getRandomAnimal(IWorldMap map) {
+        LinkedList<Animal> animals = getAnimals(map);
+        return animals.get(random.nextInt(animals.size()));
     }
 }

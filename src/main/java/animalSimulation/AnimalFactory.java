@@ -52,7 +52,8 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         this.map.placeElement(a);
     }
 
-    public void kill(Animal animal) {
+    public void kill(Animal animal, int epoch) {
+        animal.deathEpoch = epoch;
         this.map.removeElement(animal);
         for (IActionObserver observer : this.factoryObservers) observer.animalDied(animal);
     }

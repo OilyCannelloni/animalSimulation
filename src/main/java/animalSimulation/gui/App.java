@@ -17,8 +17,9 @@ public class App extends Application {
     public MapGridPane grid;
     private final int epochs = Integer.MAX_VALUE;
     private String activeWorld;
-    private HashMap<String, Simulation> simulations = new HashMap<>();
-    private HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
+    private final HashMap<String, Simulation> simulations = new HashMap<>();
+    private final HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
+    private final HashMap<String, StatDisplayBox> trackStatDisplayBoxes = new HashMap<>();
     public Thread guiUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton;
@@ -68,9 +69,15 @@ public class App extends Application {
 
 
         VBox graphBox = new VBox();
-        VBox TrackBox = new VBox();
 
-        HBox optionsBox = new HBox(controlBox, statBox, graphBox, TrackBox);
+        // Track Statistics
+        for (Field f : AnimalStatistics.class.getFields()) {
+            this.trackStatDisplayBoxes.put(f.getName(), new StatDisplayBox(f.getName()));
+        }
+        VBox trackBox = new VBox();
+        trackBox.getChildren().addAll(this.trackStatDisplayBoxes.values());
+
+        HBox optionsBox = new HBox(controlBox, statBox, graphBox, trackBox);
 
         VBox SceneVBox = new VBox(this.grid, optionsBox);
 
@@ -85,8 +92,8 @@ public class App extends Application {
     }
 
     private void updateStatistics() {
+        SimulationStatistics stats = this.simulations.get(this.activeWorld).statistics;
         for (String fieldName : this.statDisplayBoxes.keySet()) {
-            SimulationStatistics stats = this.simulations.get(this.activeWorld).statistics;
             try {
                 Field f = stats.getClass().getField(fieldName);
                 if (f.getType() == int[].class) {
@@ -95,6 +102,19 @@ public class App extends Application {
                     continue;
                 }
                 this.statDisplayBoxes.get(fieldName).setValue(f.get(stats).toString());
+            } catch (NoSuchFieldException | IllegalAccessException ignore) {}
+        }
+
+        AnimalStatistics trackStats = this.simulations.get(this.activeWorld).tracker.getAnimalStatistics();
+        for (String fieldName : this.trackStatDisplayBoxes.keySet()) {
+            try {
+                Field f = trackStats.getClass().getField(fieldName);
+                if (f.getType() == int[].class) {
+                    int[] arr = (int[]) f.get(trackStats);
+                    this.trackStatDisplayBoxes.get(fieldName).setValue(Arrays.toString(arr));
+                    continue;
+                }
+                this.trackStatDisplayBoxes.get(fieldName).setValue(f.get(trackStats).toString());
             } catch (NoSuchFieldException | IllegalAccessException ignore) {}
         }
     }

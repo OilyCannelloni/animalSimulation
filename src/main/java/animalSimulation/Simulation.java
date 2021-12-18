@@ -15,6 +15,7 @@ public class Simulation implements Runnable {
     public final Object pausePauseLock, renderPauseLock;
     public boolean paused = false;
     public boolean isDisplayed = false, isBeingRendered = false;
+    public int epoch = 0;
 
     public SimulationStatistics statistics;
     private EpochStatistics epochStatistics;
@@ -28,6 +29,7 @@ public class Simulation implements Runnable {
         this.pausePauseLock = new Object();
         this.renderPauseLock = new Object();
         this.statistics = new SimulationStatistics();
+        this.tracker = new AnimalTracker(Algorithm.getRandomAnimal(map));
     }
 
     @Override
@@ -77,6 +79,7 @@ public class Simulation implements Runnable {
                     this.pausePauseLock.wait();
                 } catch (InterruptedException ignore) {}
             }
+            this.epoch++;
         }
     }
 
@@ -159,7 +162,7 @@ public class Simulation implements Runnable {
                 if (a.getEnergy() <= 0) {
                     this.epochStatistics.epochDeadCount++;
                     this.epochStatistics.epochTotalDeadLifespan += a.lifespan;
-                    this.animalFactory.kill(a);
+                    this.animalFactory.kill(a, this.epoch);
                 }
             }
         }

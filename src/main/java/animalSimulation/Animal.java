@@ -36,8 +36,7 @@ public final class Animal extends AbstractMovableElement {
     private final int[] genome;
     private HashMap<FacingEnergyPair, Image> images;
     private final ImageManager imageManager;
-    public int lifespan;
-    public int childCount;
+    public int lifespan, childCount, deathEpoch = -1;
 
     public Animal(
             IWorldMap map,
