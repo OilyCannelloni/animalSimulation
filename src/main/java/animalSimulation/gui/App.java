@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class App extends Application {
@@ -88,6 +89,11 @@ public class App extends Application {
             SimulationStatistics stats = this.simulations.get(this.activeWorld).statistics;
             try {
                 Field f = stats.getClass().getField(fieldName);
+                if (f.getType() == int[].class) {
+                    int[] arr = (int[]) f.get(stats);
+                    this.statDisplayBoxes.get(fieldName).setValue(Arrays.toString(arr));
+                    continue;
+                }
                 this.statDisplayBoxes.get(fieldName).setValue(f.get(stats).toString());
             } catch (NoSuchFieldException | IllegalAccessException ignore) {}
         }

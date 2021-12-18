@@ -121,6 +121,11 @@ public abstract class AbstractWorldMap implements IWorldMap {
     }
 
     @Override
+    public void animalBorn(Animal parent1, Animal parent2, Animal child) {}
+
+    public void animalDied(Animal animal) {}
+
+    @Override
     public void updateField(Vector2d position) {
         this.updatedFields.add(position);
     }

@@ -46,7 +46,7 @@ public final class Animal extends AbstractMovableElement {
             int startEnergy,
             int energy,
             int moveEnergy,
-            List<IPositionChangeObserver> observers,
+            List<IActionObserver> observers,
             int[] genome
     ) {
         super(map, position, observers);

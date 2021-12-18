@@ -8,16 +8,19 @@ import java.util.List;
 public class AnimalFactory extends MovableElementFactory implements IFactory<Animal> {
 
     public final int startEnergy, moveEnergy;
+    public LinkedList<IActionObserver> factoryObservers;
+
     public AnimalFactory(
             IWorldMap map,
             ImageManager imageManager,
-            List<IPositionChangeObserver> observers,
+            List<IActionObserver> observers,
             int startEnergy,
             int moveEnergy
     ) {
         super(map, imageManager, observers);
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
+        this.factoryObservers = new LinkedList<>();
     }
 
     public AnimalFactory(
@@ -45,7 +48,13 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
 
     @Override
     public void createPlace(Vector2d position) {
-        this.map.placeElement(this.create(position));
+        Animal a = this.create(position);
+        this.map.placeElement(a);
+    }
+
+    public void kill(Animal animal) {
+        this.map.removeElement(animal);
+        for (IActionObserver observer : this.factoryObservers) observer.animalDied(animal);
     }
 
     public void createPlace(Animal parent1, Animal parent2) {
@@ -59,7 +68,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         parent1.childCount++;
         parent2.childCount++;
 
-        return new Animal(
+        Animal a = new Animal(
                 this.map,
                 this.imageManager,
                 parent1.getPosition(),
@@ -69,5 +78,8 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 this.observers,
                 Algorithm.intersectGenome(parent1, parent2)
         );
+
+        for (IActionObserver observer : this.factoryObservers) observer.animalBorn(parent1, parent2, a);
+        return a;
     }
 }

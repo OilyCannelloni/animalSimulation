@@ -5,9 +5,9 @@ import java.util.List;
 
 public abstract class AbstractMovableElement extends AbstractMapElement implements IMovableElement {
     protected Facing facing;
-    protected LinkedList<IPositionChangeObserver> observers;
+    protected LinkedList<IActionObserver> observers;
 
-    public AbstractMovableElement(IWorldMap map, Vector2d position, List<IPositionChangeObserver> observers) {
+    public AbstractMovableElement(IWorldMap map, Vector2d position, List<IActionObserver> observers) {
         super(map, position);
         this.facing = Facing.getRandom();
         this.observers = new LinkedList<>();
@@ -32,18 +32,18 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     }
 
     @Override
-    public void addObserver(IPositionChangeObserver observer) {
+    public void addObserver(IActionObserver observer) {
         this.observers.add(observer);
     }
 
     @Override
-    public void removeObserver(IPositionChangeObserver observer) {
+    public void removeObserver(IActionObserver observer) {
         this.observers.remove(observer);
     }
 
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-        for (IPositionChangeObserver observer : this.observers) {
+        for (IActionObserver observer : this.observers) {
             observer.positionChanged(this, oldPosition, newPosition);
         }
     }

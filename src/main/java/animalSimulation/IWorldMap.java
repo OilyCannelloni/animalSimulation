@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public interface IWorldMap extends IPositionChangeObserver {
+public interface IWorldMap extends IActionObserver {
     boolean placeElement(IMapElement element);
 
     boolean removeElement(IMapElement element);

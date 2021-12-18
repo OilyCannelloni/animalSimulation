@@ -9,6 +9,8 @@ public class Simulation implements Runnable {
     private final JungleMap map;
     private final AnimalFactory animalFactory;
     private final PlantFactory plantFactory, junglePlantFactory;
+    public AnimalTracker tracker;
+
     private App app;
     public final Object pausePauseLock, renderPauseLock;
     public boolean paused = false;
@@ -78,6 +80,12 @@ public class Simulation implements Runnable {
         }
     }
 
+    private void setTracker(Animal animal) {
+        this.animalFactory.factoryObservers.remove(this.tracker);
+        this.tracker = new AnimalTracker(animal);
+        this.animalFactory.factoryObservers.add(this.tracker);
+    }
+
     private int[] getDominantGenome() {
         LinkedHashMap<int[], Integer> genomeCount = new LinkedHashMap<>();
         for (IMovableElement me : this.map.getMovableElements()) {
@@ -89,6 +97,13 @@ public class Simulation implements Runnable {
                 else genomeCount.merge(genome, 1, Integer::sum);
             }
         }
+
+        if (genomeCount.isEmpty()) {
+            int[] ret = new int[32];
+            Arrays.fill(ret, 0);
+            return ret;
+        }
+
         Map.Entry<int[], Integer> maxEntry = Collections.max(genomeCount.entrySet(), Map.Entry.comparingByValue());
         this.epochStatistics.epochDominantGenomeCount = maxEntry.getValue();
         return maxEntry.getKey();
@@ -144,7 +159,7 @@ public class Simulation implements Runnable {
                 if (a.getEnergy() <= 0) {
                     this.epochStatistics.epochDeadCount++;
                     this.epochStatistics.epochTotalDeadLifespan += a.lifespan;
-                    map.removeElement(a);
+                    this.animalFactory.kill(a);
                 }
             }
         }

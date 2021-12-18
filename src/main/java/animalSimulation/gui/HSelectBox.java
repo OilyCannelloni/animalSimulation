@@ -16,6 +16,7 @@ public class HSelectBox extends HBox {
         super();
         this.setWidth(width);
         this.setHeight(height);
+        this.setMaxWidth(width);
         this.buttons = buttons;
         this.getChildren().addAll(buttons);
 

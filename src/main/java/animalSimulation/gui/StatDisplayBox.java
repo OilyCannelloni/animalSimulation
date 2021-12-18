@@ -4,8 +4,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
-import java.util.Arrays;
-
 public class StatDisplayBox extends HBox {
     private final Text valueText;
 
@@ -18,11 +16,13 @@ public class StatDisplayBox extends HBox {
         this.valueText = new Text();
 
         StackPane valueBox = new StackPane();
-        valueBox.setPrefWidth(200);
         valueBox.getChildren().add(this.valueText);
+        this.valueText.wrappingWidthProperty().setValue(200);
+        valueBox.setPrefWidth(100);
 
         this.getChildren().addAll(nameBox, valueBox);
         this.setValue(0);
+        this.setMaxWidth(400);
     }
 
     public void setValue(int value) {

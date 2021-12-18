@@ -3,8 +3,8 @@ package animalSimulation;
 public interface IMovableElement extends IMapElement {
     boolean canMove();
     void move(boolean forward);
-    void addObserver(IPositionChangeObserver observer);
-    void removeObserver(IPositionChangeObserver observer);
+    void addObserver(IActionObserver observer);
+    void removeObserver(IActionObserver observer);
     void positionChanged(Vector2d oldPosition, Vector2d newPosition);
     Facing getFacing();
 }
