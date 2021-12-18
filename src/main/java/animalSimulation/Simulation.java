@@ -30,6 +30,7 @@ public class Simulation implements Runnable {
         this.renderPauseLock = new Object();
         this.statistics = new SimulationStatistics();
         this.tracker = new AnimalTracker(Algorithm.getRandomAnimal(map));
+        this.animalFactory.factoryObservers.add(this.tracker);
     }
 
     @Override

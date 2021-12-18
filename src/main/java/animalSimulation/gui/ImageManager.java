@@ -6,8 +6,14 @@ import javafx.scene.image.Image;
 import java.util.HashMap;
 
 public class ImageManager {
-    String IMAGE_PATH = "file:.\\src\\main\\resources\\images\\";
-    String mapBackground = "jungle_background.png";
+    public static String
+            IMAGE_PATH = "file:.\\src\\main\\resources\\images\\",
+            mapBackground = "jungle_background.png",
+            trackingCircle = "tracked.png";
+
+    public static Image
+            trackingCircleImage = new Image(IMAGE_PATH + trackingCircle);
+
     HashMap<String, Image> images;
 
     public ImageManager() {

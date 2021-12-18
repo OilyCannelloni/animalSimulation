@@ -4,7 +4,8 @@ public class AnimalStatistics {
     public long
             childCount = 0,
             aliveDescendantCount = 0,
-            diedEpoch = 0;
+            diedEpoch = 0,
+            energy = 0;
 
     public int[] genome;
 

@@ -7,6 +7,7 @@ public class AnimalTracker extends ActionObserver {
     private final IWorldMap map;
     private int totalChildren = 0;
     private final HashSet<Animal> descendants;
+    private TrackingCircle trackingCircle;
 
     public AnimalTracker(Animal animal) {
         this.animal = animal;
@@ -14,6 +15,8 @@ public class AnimalTracker extends ActionObserver {
         this.descendants = new HashSet<>();
         this.descendants.add(animal);
         this.animal.addObserver(this);
+        this.trackingCircle = new TrackingCircle(this.map, animal.getPosition());
+        this.map.placeElement(this.trackingCircle);
     }
 
     @Override
@@ -28,11 +31,26 @@ public class AnimalTracker extends ActionObserver {
     @Override
     public void animalDied(Animal animal) {
         this.descendants.remove(animal);
+        if (animal == this.animal) {
+            map.removeElement(this.trackingCircle);
+        }
     }
 
     public int getDescendantCount() {
         int s = this.descendants.size();
         return s == 0 ? 0 : s - 1;
+    }
+
+    @Override
+    public void positionChanged(IMapElement element, Vector2d oldPosition, Vector2d newPosition) {
+        if (element instanceof Animal) {
+            Animal a = (Animal) element;
+            if (a == this.animal) {
+                map.removeElement(this.trackingCircle);
+                this.trackingCircle.position = newPosition;
+                map.placeElement(this.trackingCircle);
+            }
+        }
     }
 
     public AnimalStatistics getAnimalStatistics() {
@@ -44,6 +62,7 @@ public class AnimalTracker extends ActionObserver {
         stats.childCount = this.totalChildren;
         stats.genome = this.animal.getGenome();
         stats.position = this.animal.getPosition();
+        stats.energy = this.animal.getEnergy();
         return stats;
     }
 }
