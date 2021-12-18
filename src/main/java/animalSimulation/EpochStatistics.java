@@ -3,20 +3,22 @@ package animalSimulation;
 import java.util.Arrays;
 
 public class EpochStatistics {
-    public int
+    public long
             epochAnimalCount = 0,
             epochEatenPlants = 0,
             epochNewPlants,
             epochTotalEnergy = 0,
             epochDeadCount = 0,
+            epochDeadLifespan = 0,
             epochTotalDeadLifespan = 0,
             epochTotalChildCount,
             epochBornCount = 0,
             epochDominantGenomeCount = 0;
 
     public float
-            epochAvgChildCount,
-            epochAvgEnergy = 0;
+            epochAvgChildCount = 0,
+            epochAvgEnergy = 0,
+            epochAvgTotalDeadLifespan = 0;
 
     public int[] epochDominantGenome = new int[32];
 

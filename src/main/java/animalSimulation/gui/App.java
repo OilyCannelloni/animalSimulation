@@ -27,6 +27,7 @@ public class App extends Application {
     public Thread guiUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton, dominantGenomeSelectButton;
+    private ClickButton saveStatisticsButton;
 
     @Override
     public void start(Stage primaryStage) {
@@ -82,8 +83,17 @@ public class App extends Application {
                 "Show animals with dominant genome"
         );
 
+        this.saveStatisticsButton = new ClickButton(
+                (e) -> {
+                    System.out.println("statButton");
+                    this.getActiveSimulation().statistics.saveToCSV(this.activeWorld);
+                },
+                "Save simulation statistics"
+        );
 
-        VBox controlBox = new VBox(simulationSelect, this.pauseButton, this.dominantGenomeSelectButton);
+
+        VBox controlBox = new VBox(simulationSelect, this.pauseButton, this.dominantGenomeSelectButton,
+                this.saveStatisticsButton);
 
         // Statistics
         for (Field f : SimulationStatistics.class.getFields()) {

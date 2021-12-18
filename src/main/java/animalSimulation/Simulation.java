@@ -146,7 +146,7 @@ public class Simulation implements Runnable {
                 Animal a = (Animal) e;
                 if (a.getEnergy() <= 0) {
                     this.epochStatistics.epochDeadCount++;
-                    this.epochStatistics.epochTotalDeadLifespan += a.lifespan;
+                    this.epochStatistics.epochDeadLifespan += a.lifespan;
                     this.animalFactory.kill(a, this.epoch);
                 }
             }
