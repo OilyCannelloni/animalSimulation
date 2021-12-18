@@ -10,7 +10,8 @@ public class SimulationStatistics {
             totalDeadLifespan = 1,
             allTimeBornCount = 1,
             currentAliveAnimals = 0,
-            currentAlivePlants = 0;
+            currentAlivePlants = 0,
+            currentDominantGenomeCount = 0;
 
 
     public float
@@ -18,7 +19,7 @@ public class SimulationStatistics {
             currentAverageChildCount = 0,
             currentAverageEnergy = 0;
 
-    public int[] currentDominantGenotype = new int[32];
+    public int[] currentDominantGenome = new int[32];
 
     public SimulationStatistics() {
         this.simulationLog = new LinkedList<>();
@@ -35,5 +36,7 @@ public class SimulationStatistics {
         this.currentAliveAnimals = epoch.epochAnimalCount;
         this.currentAlivePlants += epoch.epochNewPlants - epoch.epochEatenPlants;
         this.currentAverageEnergy = epoch.epochAvgEnergy;
+        this.currentDominantGenome = epoch.epochDominantGenome;
+        this.currentDominantGenomeCount = epoch.epochDominantGenomeCount;
     }
 }

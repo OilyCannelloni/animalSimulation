@@ -62,7 +62,7 @@ public class Simulation implements Runnable {
             this.growPlants();
 
             // update stats
-            this.epochStatistics.update();
+            this.epochStatistics.update(this.getDominantGenome());
             this.statistics.update(this.epochStatistics);
 
             // enable map update
@@ -77,6 +77,23 @@ public class Simulation implements Runnable {
             }
         }
     }
+
+    private int[] getDominantGenome() {
+        LinkedHashMap<int[], Integer> genomeCount = new LinkedHashMap<>();
+        for (IMovableElement me : this.map.getMovableElements()) {
+            if (me instanceof Animal) {
+                Animal a = (Animal) me;
+                int[] genome = a.getGenome();
+                Arrays.sort(genome);
+                if (genomeCount.get(genome) == null) genomeCount.put(genome, 1);
+                else genomeCount.merge(genome, 1, Integer::sum);
+            }
+        }
+        Map.Entry<int[], Integer> maxEntry = Collections.max(genomeCount.entrySet(), Map.Entry.comparingByValue());
+        this.epochStatistics.epochDominantGenomeCount = maxEntry.getValue();
+        return maxEntry.getKey();
+    }
+
 
     public void togglePause() {
         this.paused = !this.paused;

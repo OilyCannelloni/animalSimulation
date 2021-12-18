@@ -1,5 +1,6 @@
 package animalSimulation;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Algorithm {
@@ -21,15 +22,12 @@ public class Algorithm {
         return a2 + p*(b2 - a2);
     }
 
-    public static void partitionIntoK(int n, int k) {
-
-    }
-
     public static int[] generateRandomGenome(int length, int nVariants) {
         int[] res = new int[length];
         for (int i = 0; i < length; i++) {
             res[i] = random.nextInt(nVariants);
         }
+        // Arrays.sort(res);
         return res;
     }
 

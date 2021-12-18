@@ -11,7 +11,8 @@ public class EpochStatistics {
             epochDeadCount = 0,
             epochTotalDeadLifespan = 0,
             epochTotalChildCount,
-            epochBornCount = 0;
+            epochBornCount = 0,
+            epochDominantGenomeCount = 0;
 
     public float
             epochAvgChildCount,
@@ -23,8 +24,9 @@ public class EpochStatistics {
         Arrays.fill(this.epochDominantGenome, 0);
     }
 
-    public void update() {
+    public void update(int[] epochDominantGenome) {
         this.epochAvgEnergy = ((float) this.epochTotalEnergy) / this.epochAnimalCount;
         this.epochAvgChildCount = ((float) this.epochTotalChildCount) / this.epochAnimalCount;
+        this.epochDominantGenome = epochDominantGenome;
     }
 }
