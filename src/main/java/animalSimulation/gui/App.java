@@ -3,6 +3,7 @@ package animalSimulation.gui;
 import animalSimulation.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -13,6 +14,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class App extends Application {
+    public int MAX_MAPS = 10;
+
     public HashMap<String, IWorldMap> maps = new HashMap<>();
     public MapGridPane grid;
     private final int epochs = Integer.MAX_VALUE;
@@ -21,15 +24,60 @@ public class App extends Application {
     private final HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
     private final HashMap<String, StatDisplayBox> trackStatDisplayBoxes = new HashMap<>();
     public Thread guiUpdateThread;
-    public final Object gridUpdatePauseLock = new Object();
+    public final Object gridUpdatePauseLock = new Object(), inputPauseLock = new Object();
     private ToggleButton pauseButton, dominantGenomeSelectButton;
     private ClickButton saveStatisticsButton;
     private StatisticsChart chart;
+    private Stage primaryStage;
+
+    private final String[] mapTypes = {
+            "JungleMap",
+            "WrappedJungleMap"
+    };
 
     @Override
     public void start(Stage primaryStage) {
-        this.initialize();
+        this.primaryStage = primaryStage;
+        this.showInputPrompt();
+    }
 
+    private void showInputPrompt() {
+        VBox mapListBox = new VBox();
+        mapListBox.setPrefHeight(500);
+        mapListBox.getChildren().add(new MapConfigurationBox(this.mapTypes));
+
+        HBox buttonBox = new HBox();
+        buttonBox.getChildren().add(new ClickButton((event -> {
+            for (Node node : mapListBox.getChildren()) {
+                if (node instanceof MapConfigurationBox) {
+                    MapConfigurationBox mapBox = (MapConfigurationBox) node;
+
+
+
+
+                }
+            }
+
+            Platform.runLater(this::createGUI);
+        }), "Start Simulation"));
+
+        buttonBox.getChildren().add(new ClickButton((event -> {
+            if (mapListBox.getChildren().size() < this.MAX_MAPS)
+                Platform.runLater(() -> mapListBox.getChildren().add(new MapConfigurationBox(this.mapTypes)));
+            else
+                System.out.println("InputPrompt: Maximum number of maps reached.");
+        }), "Add Map"));
+
+        VBox mainBox = new VBox(mapListBox, buttonBox);
+        Scene scene = new Scene(mainBox);
+        Stage inputStage = new Stage();
+        inputStage.setTitle("Configure Simulation");
+        inputStage.setScene(scene);
+        inputStage.show();
+    }
+
+    private void createGUI() {
+        this.initialize();
         ArrayList<SelectBoxButton> simSelectButtons = new ArrayList<>();
         for (String worldName : this.maps.keySet()) {
             simSelectButtons.add(new SelectBoxButton(
@@ -121,8 +169,6 @@ public class App extends Application {
         Scene scene = new Scene(
                 SceneVBox
         );
-
-
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -246,17 +292,21 @@ public class App extends Application {
     }
 
 
+
+
     private void initialize() {
         ImageManager imageManager = new ImageManager();
         imageManager.load();
 
+        this.showInputPrompt();
+
         JungleMap map1 = new JungleMap(
                 100,
                 30,
-                new Rect2D(
-                        new Vector2d(45, 10),
-                        new Vector2d(55, 20)
-                )
+                10,
+                0,
+                0,
+                0
         );
         AnimalFactory animalFactory1 = new AnimalFactory(map1, imageManager,200, 1);
         for (int i = 0; i < 20; i++) {
@@ -270,10 +320,10 @@ public class App extends Application {
         JungleMap map2 = new JungleMap(
                 100,
                 30,
-                new Rect2D(
-                        new Vector2d(30, 10),
-                        new Vector2d(70, 20)
-                )
+                2,
+                0,
+                0,
+                0
         );
         AnimalFactory animalFactory2 = new AnimalFactory(map2, imageManager,200, 1);
         for (int i = 0; i < 40; i++) {
@@ -284,13 +334,13 @@ public class App extends Application {
         this.addWorld(map2, sim2, "map2");
 
 
-        JungleMap map3 = new WrappedJungleMap(
+        JungleMap map3 = new JungleMap(
                 100,
                 30,
-                new Rect2D(
-                        new Vector2d(0, 0),
-                        new Vector2d(90, 20)
-                )
+                20,
+                0,
+                0,
+                0
         );
         AnimalFactory animalFactory3 = new AnimalFactory(map3, imageManager,200, 1);
         for (int i = 0; i < 40; i++) {

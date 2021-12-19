@@ -8,7 +8,8 @@ public class ClickButton extends Button {
     public ClickButton(EventHandler<ActionEvent> onClick, String text) {
         super();
         this.setText(text);
-        this.setPrefSize(400, 100);
+        this.setPrefHeight(100);
+        this.setPrefWidth(400);
         this.setOnAction(onClick);
     }
 }
