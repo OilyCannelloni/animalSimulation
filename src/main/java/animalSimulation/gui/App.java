@@ -2,19 +2,15 @@ package animalSimulation.gui;
 
 import animalSimulation.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.awt.*;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class App extends Application {
     public HashMap<String, IWorldMap> maps = new HashMap<>();
@@ -28,6 +24,7 @@ public class App extends Application {
     public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton, dominantGenomeSelectButton;
     private ClickButton saveStatisticsButton;
+    private StatisticsChart chart;
 
     @Override
     public void start(Stage primaryStage) {
@@ -103,15 +100,20 @@ public class App extends Application {
         VBox statBox = new VBox();
         statBox.getChildren().addAll(this.statDisplayBoxes.values());
 
-
-        VBox graphBox = new VBox();
-
         // Track Statistics
         for (Field f : AnimalStatistics.class.getFields()) {
             this.trackStatDisplayBoxes.put(f.getName(), new StatDisplayBox(f.getName()));
         }
         VBox trackBox = new VBox();
         trackBox.getChildren().addAll(this.trackStatDisplayBoxes.values());
+
+        // Chart
+        //ChartSelectComboBox chartSelect = new ChartSelectComboBox(new );
+        this.chart = new StatisticsChart(this.getActiveSimulation());
+        this.chart.loadSimulation(this.getActiveSimulation());
+        this.chart.setActiveChart("epochAnimalCount");
+
+        VBox graphBox = new VBox(chart);
 
         HBox optionsBox = new HBox(controlBox, statBox, graphBox, trackBox);
 
@@ -153,13 +155,16 @@ public class App extends Application {
                 this.trackStatDisplayBoxes.get(fieldName).setValue(f.get(trackStats).toString());
             } catch (NoSuchFieldException | IllegalAccessException ignore) {}
         }
+
+        if (this.chart != null)
+            Platform.runLater(() -> this.chart.update());
     }
 
     private void updateGui() {
         while (true) {
             // sleep
             try {
-                Thread.sleep(100);
+                Thread.sleep(300);
             } catch (InterruptedException ignore) {}
 
             // wait for simulation turn to complete
@@ -227,6 +232,7 @@ public class App extends Application {
         this.reloadGrid();
         if (newSim.paused) this.pauseButton.setActive();
         else this.pauseButton.setInactive();
+        this.chart.loadSimulation(newSim);
     }
 
     private void initSetActiveWorld(String name) {

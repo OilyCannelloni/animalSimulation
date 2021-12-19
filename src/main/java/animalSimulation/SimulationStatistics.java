@@ -8,6 +8,7 @@ import java.util.ListIterator;
 
 public class SimulationStatistics {
     public LinkedList<EpochStatistics> simulationLog;
+    private LinkedList<IStatisticsObserver> observers;
 
     public long
             allTimeDeadCount = 1,
@@ -27,11 +28,18 @@ public class SimulationStatistics {
 
     public SimulationStatistics() {
         this.simulationLog = new LinkedList<>();
+        this.observers = new LinkedList<>();
+    }
+
+    public void addObserver(IStatisticsObserver observer) {
+        this.observers.add(observer);
+    }
+
+    public void removeObserver(IStatisticsObserver observer) {
+        this.observers.remove(observer);
     }
 
     public void update(EpochStatistics epoch) {
-        this.simulationLog.add(epoch);
-
         this.totalDeadLifespan += epoch.epochDeadLifespan;
         this.allTimeDeadCount += epoch.epochDeadCount;
         this.allTimeAvgLifespan = ((float) this.totalDeadLifespan) / this.allTimeDeadCount;
@@ -43,14 +51,24 @@ public class SimulationStatistics {
         this.currentDominantGenome = epoch.epochDominantGenome;
         this.currentDominantGenomeCount = epoch.epochDominantGenomeCount;
 
+        epoch.epochPlantCount = this.currentAlivePlants;
         epoch.epochTotalDeadLifespan = this.totalDeadLifespan + epoch.epochDeadLifespan;
-        epoch.epochAvgTotalDeadLifespan = ((float) epoch.epochTotalDeadLifespan) / this.allTimeDeadCount;
+        epoch.epochAvgDeadLifespan = ((float) epoch.epochTotalDeadLifespan) / this.allTimeDeadCount;
+
+        this.logEntry(epoch);
+    }
+
+    private void logEntry(EpochStatistics entry) {
+        this.simulationLog.add(entry);
+        for (IStatisticsObserver observer : this.observers) {
+            observer.entryLogged(entry, this.simulationLog.size());
+        }
     }
 
     public void saveToCSV(String prefix) {
         Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
-        String fileName = prefix + format.format(date);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String fileName = prefix + "_" + format.format(date);
         CSVWriter csvWriter = new CSVWriter(".\\saves\\" + fileName + ".csv");
 
         LinkedList<String> columnNames = new LinkedList<>();

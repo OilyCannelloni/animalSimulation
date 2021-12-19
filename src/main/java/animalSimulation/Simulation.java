@@ -39,7 +39,7 @@ public class Simulation implements Runnable {
         while (true) {
             // wait
             try {
-                Thread.sleep(100);
+                Thread.sleep(300);
             } catch (InterruptedException ignore) {}
 
             // wait for App to finish drawing

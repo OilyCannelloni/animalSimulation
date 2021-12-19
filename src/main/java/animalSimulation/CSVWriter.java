@@ -38,5 +38,4 @@ public class CSVWriter {
     public void close() {
         this.writer.close();
     }
-
 }

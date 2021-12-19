@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class EpochStatistics {
     public long
             epochAnimalCount = 0,
+            epochPlantCount = 0,
             epochEatenPlants = 0,
             epochNewPlants,
             epochTotalEnergy = 0,
@@ -18,7 +19,7 @@ public class EpochStatistics {
     public float
             epochAvgChildCount = 0,
             epochAvgEnergy = 0,
-            epochAvgTotalDeadLifespan = 0;
+            epochAvgDeadLifespan = 0;
 
     public int[] epochDominantGenome = new int[32];
 
