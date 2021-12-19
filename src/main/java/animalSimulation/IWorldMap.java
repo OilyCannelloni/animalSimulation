@@ -29,4 +29,6 @@ public interface IWorldMap extends IActionObserver {
     void clearUpdatedFields();
 
     void removeAllElementsOfType(Class<?> cls);
+
+    Vector2d mapTarget(Vector2d target);
 }

@@ -23,11 +23,14 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     @Override
     public void move(boolean forward) {
         int mul = forward ? 1 : -1;
-        Vector2d target = this.position.add(this.facing.toUnitVector().multiplyEach(mul));
+        Vector2d expected_target = this.position.add(this.facing.toUnitVector().multiplyEach(mul));
+        Vector2d target = this.map.mapTarget(expected_target);
         if (this.map.canMoveTo(target)) {
             this.onMove();
             this.positionChanged(this.position, target);
             this.position = target;
+
+            if (!target.equals(expected_target)) System.out.println("Wrapped at " + target);
         }
     }
 

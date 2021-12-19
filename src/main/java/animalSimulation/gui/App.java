@@ -284,12 +284,12 @@ public class App extends Application {
         this.addWorld(map2, sim2, "map2");
 
 
-        JungleMap map3 = new JungleMap(
+        JungleMap map3 = new WrappedJungleMap(
                 100,
                 30,
                 new Rect2D(
                         new Vector2d(0, 0),
-                        new Vector2d(15, 15)
+                        new Vector2d(90, 20)
                 )
         );
         AnimalFactory animalFactory3 = new AnimalFactory(map3, imageManager,200, 1);
@@ -301,8 +301,8 @@ public class App extends Application {
         this.addWorld(map3, sim3, "map3");
 
 
-        this.grid = new MapGridPane(this, this.maps.get("map1"));
-        this.setActiveWorld("map1");
+        this.grid = new MapGridPane(this, this.maps.get("map3"));
+        this.setActiveWorld("map3");
 
         this.guiUpdateThread = new Thread(this::updateGui);
         this.guiUpdateThread.start();

@@ -58,7 +58,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
         return true;
     }
 
-    private void forcePlaceElement(IMapElement element, Vector2d position) {
+    protected void forcePlaceElement(IMapElement element, Vector2d position) {
         LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
         if (elementsAtPosition == null) {
             elementsAtPosition = new LinkedList<>();
@@ -123,6 +123,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
     @Override
     public void animalBorn(Animal parent1, Animal parent2, Animal child) {}
 
+    @Override
     public void animalDied(Animal animal) {}
 
     @Override
@@ -153,5 +154,10 @@ public abstract class AbstractWorldMap implements IWorldMap {
         for (IMapElement element : toRemove) {
             this.removeElement(element);
         }
+    }
+
+    @Override
+    public Vector2d mapTarget(Vector2d target) {
+        return target;
     }
 }
