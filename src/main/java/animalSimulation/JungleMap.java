@@ -78,7 +78,8 @@ public class JungleMap extends AbstractWorldMap {
         for (IMovableElement movableElement : this.movableElements) {
             if (movableElement instanceof Animal) {
                 Animal animal = (Animal) movableElement;
-                this.animalFactory.copy(animal, Algorithm.getRandomEmptyField(this));
+                for (int i = 0; i < this.respawnCopies; i++)
+                    this.animalFactory.copy(animal, Algorithm.getRandomEmptyField(this));
             }
         }
 

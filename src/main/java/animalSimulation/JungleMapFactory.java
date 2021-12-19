@@ -29,18 +29,20 @@ public class JungleMapFactory {
         junglePercentage = Math.min(junglePercentage, 80);
 
         int respawnThreshold = 0;
-
         int respawnCopies = 0;
-
         int respawnRepeat = 0;
 
-        int startEnergy = 100;
-        int moveEnergy = 1;
-        int initAnimals = 10;
+        int startEnergy = mapData.get("Start Energy");
+        startEnergy = Math.max(startEnergy, 1);
 
-        int plantEnergy = 50;
+        int moveEnergy = mapData.get("Move Energy");
 
-        JungleMap map = new JungleMap(
+        int initAnimals = mapData.get("Initial Animals");
+        initAnimals = Math.max(initAnimals, 5);
+
+        int plantEnergy = mapData.get("Plant Energy");
+
+        WrappedJungleMap map = new WrappedJungleMap(
                 imageManager,
                 startEnergy,
                 moveEnergy,

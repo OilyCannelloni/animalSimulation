@@ -50,6 +50,9 @@ public class Simulation implements Runnable {
             // remove dead bodies
             this.removeDead();
 
+            // respawn if respawn conditions met
+            this.map.respawn();
+
             // turn and move animals
             this.makeAnimalMoves();
 

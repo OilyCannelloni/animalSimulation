@@ -13,8 +13,9 @@ import java.util.HashMap;
 public class MapConfigurationBox extends HBox {
     private final ComboBox<String> mapTypeSelect;
     private TextInputBox mapNameInput;
+    private int mapsN = 1;
 
-    public MapConfigurationBox(String[] mapTypes){
+    public MapConfigurationBox(String[] mapTypes, int mapID){
         super();
 
         this.setAlignment(Pos.CENTER_LEFT);
@@ -22,24 +23,23 @@ public class MapConfigurationBox extends HBox {
 
         this.mapTypeSelect = new ComboBox<>();
         this.mapTypeSelect.setItems(FXCollections.observableArrayList(mapTypes));
+        this.mapTypeSelect.setPrefWidth(200);
 
-        this.mapNameInput = new TextInputBox("Map Name", "map");
-
-        NumberInputBox heightInput = new NumberInputBox("Height", 30);
-        NumberInputBox widthInput = new NumberInputBox("Width", 80);
-        NumberInputBox junglePercentageInput = new NumberInputBox("Jungle %", 10);
-        NumberInputBox respawnAliveThresholdInput = new NumberInputBox("Respawn Threshold", 0);
-        NumberInputBox respawnNCopiesInput = new NumberInputBox("Respawn Copies", 0);
-        NumberInputBox respawnRepeatInput = new NumberInputBox("Repeat respawn", 0);
+        this.mapNameInput = new TextInputBox("Map Name", "map" + mapID);
 
         this.getChildren().addAll(
-            this.mapTypeSelect,
-            heightInput,
-            widthInput,
-            junglePercentageInput,
-            respawnAliveThresholdInput,
-            respawnNCopiesInput,
-            respawnRepeatInput
+                this.mapTypeSelect,
+                this.mapNameInput,
+                new NumberInputBox("Height", 30),
+                new NumberInputBox("Width", 80),
+                new NumberInputBox("Jungle %", 10),
+                new NumberInputBox("Respawn Threshold", 0),
+                new NumberInputBox("Respawn Copies", 0),
+                new NumberInputBox("Repeat respawn", 0),
+                new NumberInputBox("Start Energy", 100),
+                new NumberInputBox("Move Energy", 1),
+                new NumberInputBox("Initial Animals", 10),
+                new NumberInputBox("Plant Energy", 40)
         );
     }
 

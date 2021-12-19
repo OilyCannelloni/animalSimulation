@@ -16,20 +16,21 @@ import java.util.*;
 public class App extends Application {
     public int MAX_MAPS = 10;
 
-    public HashMap<String, IWorldMap> maps = new HashMap<>();
+    public HashMap<String, IWorldMap> maps = new LinkedHashMap<>();
     public MapGridPane grid;
     private final int epochs = Integer.MAX_VALUE;
     private String activeWorld;
-    private final HashMap<String, Simulation> simulations = new HashMap<>();
+    private final HashMap<String, Simulation> simulations = new LinkedHashMap<>();
     private final HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
     private final HashMap<String, StatDisplayBox> trackStatDisplayBoxes = new HashMap<>();
     public Thread guiUpdateThread;
-    public final Object gridUpdatePauseLock = new Object(), inputPauseLock = new Object();
+    public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton, dominantGenomeSelectButton;
     private ClickButton saveStatisticsButton;
     private StatisticsChart chart;
     private Stage primaryStage;
     private ImageManager imageManager;
+    private int mapID = 0;
 
     private final String[] mapTypes = {
             "JungleMap",
@@ -47,36 +48,56 @@ public class App extends Application {
     private void showInputPrompt() {
         VBox mapListBox = new VBox();
         mapListBox.setPrefHeight(500);
-        mapListBox.getChildren().add(new MapConfigurationBox(this.mapTypes));
 
         HBox buttonBox = new HBox();
         buttonBox.getChildren().add(new ClickButton((event -> {
+
+            LinkedList<MapConfigurationBox> mapBoxes = new LinkedList<>();
             for (Node node : mapListBox.getChildren()) {
                 if (node instanceof MapConfigurationBox) {
                     MapConfigurationBox mapBox = (MapConfigurationBox) node;
-
-
-
-
+                    mapBoxes.add(mapBox);
                 }
             }
+            this.createWorldsFromInput(mapBoxes);
 
             Platform.runLater(this::createGUI);
         }), "Start Simulation"));
 
         buttonBox.getChildren().add(new ClickButton((event -> {
             if (mapListBox.getChildren().size() < this.MAX_MAPS)
-                Platform.runLater(() -> mapListBox.getChildren().add(new MapConfigurationBox(this.mapTypes)));
+                Platform.runLater(() -> mapListBox.getChildren().add(
+                        new MapConfigurationBox(this.mapTypes, ++this.mapID)));
             else
                 System.out.println("InputPrompt: Maximum number of maps reached.");
         }), "Add Map"));
 
         VBox mainBox = new VBox(mapListBox, buttonBox);
+        mainBox.setPrefWidth(1600);
         Scene scene = new Scene(mainBox);
         Stage inputStage = new Stage();
         inputStage.setTitle("Configure Simulation");
         inputStage.setScene(scene);
         inputStage.show();
+    }
+
+    private void createWorldsFromInput(Collection<MapConfigurationBox> mapBoxes) {
+        JungleMapFactory factory = new JungleMapFactory(this.imageManager);
+        int i = 0;
+        for (MapConfigurationBox mapBox : mapBoxes) {
+            String mapName = mapBox.getMapName();
+            i++;
+            if (mapName == null) mapName = "map_" + i;
+
+            String mapType = mapBox.getMapTypeName();
+            JungleMap map = factory.createMap(mapType, mapBox.getMapData());
+            map.initialize();
+            Simulation simulation = new Simulation(this, map);
+
+            this.addWorld(map, simulation, mapName);
+        }
+
+
     }
 
     private void createGUI() {
@@ -298,72 +319,14 @@ public class App extends Application {
 
 
     private void initialize() {
-        this.showInputPrompt();
-
-        JungleMap map1 = new JungleMap(
-                imageManager,
-                200,
-                1,
-                20,
-                50,
-                100,
-                30,
-                10,
-                0,
-                0,
-                0
-        );
-        map1.initialize();
-
-        Simulation sim1 = new Simulation(this, map1);
-        this.addWorld(map1, sim1, "map1");
-
-        JungleMap map2 = new JungleMap(
-                imageManager,
-                200,
-                1,
-                40,
-                50,
-                100,
-                30,
-                2,
-                0,
-                0,
-                0
-        );
-        map2.initialize();
-
-        Simulation sim2 = new Simulation(this, map2);
-        this.addWorld(map2, sim2, "map2");
-
-        JungleMap map3 = new JungleMap(
-                imageManager,
-                200,
-                1,
-                30,
-                50,
-                100,
-                30,
-                20,
-                0,
-                0,
-                0
-        );
-        map3.initialize();
-
-        Simulation sim3 = new Simulation(this, map3);
-        this.addWorld(map3, sim3, "map3");
-
-
-        this.grid = new MapGridPane(this, this.maps.get("map3"));
-        this.setActiveWorld("map3");
+        String firstMap = this.maps.keySet().iterator().next();
+        this.grid = new MapGridPane(this, this.maps.get(firstMap));
+        this.setActiveWorld(firstMap);
 
         this.guiUpdateThread = new Thread(this::updateGui);
         this.guiUpdateThread.start();
 
-        this.startWorld("map1");
-        this.startWorld("map2");
-        this.startWorld("map3");
+        for (String name : this.simulations.keySet()) this.startWorld(name);
     }
 
     public Simulation getActiveSimulation() {
