@@ -3,7 +3,6 @@ package animalSimulation.gui;
 import animalSimulation.EpochStatistics;
 import animalSimulation.IStatisticsObserver;
 import animalSimulation.Simulation;
-import animalSimulation.SimulationStatistics;
 import javafx.application.Platform;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -16,10 +15,11 @@ public class StatisticsChart extends LineChart<Number, Number> implements IStati
     private String activeChart = "epochAnimalCount";
     private Simulation activeSimulation;
 
-    private final String[] plottable = {
+    public final String[] plottable = {
             "epochAnimalCount",
             "epochPlantCount",
             "epochAvgEnergy",
+            "epochTotalEnergy",
             "epochAvgDeadLifespan",
             "epochAvgChildCount"
     };
@@ -38,6 +38,7 @@ public class StatisticsChart extends LineChart<Number, Number> implements IStati
 
     public void setActiveChart(String name) {
         this.activeChart = name;
+        this.update();
     }
 
     public void update() {

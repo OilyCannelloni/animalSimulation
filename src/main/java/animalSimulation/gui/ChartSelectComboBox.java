@@ -1,15 +1,25 @@
 package animalSimulation.gui;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 
 
 public class ChartSelectComboBox extends ComboBox<String> {
-    public ChartSelectComboBox(ObservableList<String> items, EventHandler<ActionEvent> event) {
-        this.setItems(items);
+    private final StatisticsChart chart;
+
+    public ChartSelectComboBox(StatisticsChart chart) {
+        this.chart = chart;
+        ObservableList<String> nameList = FXCollections.observableArrayList(chart.plottable);
+        this.setItems(nameList);
         this.setPrefWidth(200);
-        this.setOnAction(event);
+
+//        this.setOnAction((event) -> {
+//            this.chart.setActiveChart(this.getValue());
+//        });
+
+        this.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            this.chart.setActiveChart(newValue);
+        }));
     }
 }

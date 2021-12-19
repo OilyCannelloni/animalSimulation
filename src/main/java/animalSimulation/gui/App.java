@@ -108,12 +108,11 @@ public class App extends Application {
         trackBox.getChildren().addAll(this.trackStatDisplayBoxes.values());
 
         // Chart
-        //ChartSelectComboBox chartSelect = new ChartSelectComboBox(new );
         this.chart = new StatisticsChart(this.getActiveSimulation());
         this.chart.loadSimulation(this.getActiveSimulation());
         this.chart.setActiveChart("epochAnimalCount");
-
-        VBox graphBox = new VBox(chart);
+        ChartSelectComboBox chartSelectBox = new ChartSelectComboBox(this.chart);
+        VBox graphBox = new VBox(chartSelectBox, this.chart);
 
         HBox optionsBox = new HBox(controlBox, statBox, graphBox, trackBox);
 
@@ -156,8 +155,7 @@ public class App extends Application {
             } catch (NoSuchFieldException | IllegalAccessException ignore) {}
         }
 
-        if (this.chart != null)
-            Platform.runLater(() -> this.chart.update());
+        this.updateChart();
     }
 
     private void updateGui() {
@@ -178,6 +176,11 @@ public class App extends Application {
 
             this.updateStatistics();
         }
+    }
+
+    private void updateChart() {
+        if (this.chart != null)
+            Platform.runLater(() -> this.chart.update());
     }
 
     private void updateGrid() {
