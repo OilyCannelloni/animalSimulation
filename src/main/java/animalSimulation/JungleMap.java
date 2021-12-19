@@ -2,6 +2,8 @@ package animalSimulation;
 
 import animalSimulation.gui.ImageManager;
 
+import java.util.LinkedList;
+
 public class JungleMap extends AbstractWorldMap {
     private final Rect2D jungleBox;
     private final int respawnThreshold;
@@ -70,18 +72,27 @@ public class JungleMap extends AbstractWorldMap {
         return this.jungleBox;
     }
 
-    public void respawn() {
+    public boolean respawn() {
         int movableCount = this.movableElements.size();
-        if (movableCount > this.respawnThreshold) return;
-        if (--this.respawnRepeat < 0) return;
+        System.out.println(movableCount + " " + this.respawnThreshold);
+        if (movableCount > this.respawnThreshold) return false;
+        System.out.println("repeat" + this.respawnRepeat);
+        if (--this.respawnRepeat < 0) return false;
+
+        System.out.println(this.name + ": Respawning animals");
+
+        LinkedList<Animal> newAnimals = new LinkedList<>();
 
         for (IMovableElement movableElement : this.movableElements) {
             if (movableElement instanceof Animal) {
                 Animal animal = (Animal) movableElement;
-                for (int i = 0; i < this.respawnCopies; i++)
-                    this.animalFactory.copy(animal, Algorithm.getRandomEmptyField(this));
+                for (int i = 0; i < this.respawnCopies; i++){
+                    Animal a = this.animalFactory.copy(animal, Algorithm.getRandomEmptyField(this));
+                    newAnimals.add(a);
+                }
             }
         }
-
+        newAnimals.forEach(this::placeElement);
+        return true;
     }
 }

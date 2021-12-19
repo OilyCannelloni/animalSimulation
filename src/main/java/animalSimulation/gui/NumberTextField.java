@@ -20,6 +20,7 @@ public class NumberTextField extends TextField {
 
         formatter.valueProperty().bindBidirectional(this.intProperty);
         this.setTextFormatter(formatter);
+        this.intProperty.setValue(defaultVal);
     }
 
     public int getValue() {

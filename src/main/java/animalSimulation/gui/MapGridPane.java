@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class MapGridPane extends GridPane {
+    public final int MAX_WIDTH = 100, MAX_HEIGHT = 30;
     private IWorldMap map;
     private final App app;
     private MapGridPaneField[][] fields;
@@ -22,7 +23,7 @@ public class MapGridPane extends GridPane {
         this.map = map;
         this.imageManager = new ImageManager();
         this.nSquares = map.getBoundingBox().getDimensions();
-        this.fields = new MapGridPaneField[this.nSquares.x][this.nSquares.y];
+        this.fields = new MapGridPaneField[this.MAX_WIDTH][this.MAX_HEIGHT];
         this.configureGrid();
     }
 
@@ -32,16 +33,16 @@ public class MapGridPane extends GridPane {
     }
 
     private void configureGrid() {
-        for (int i = 0; i < this.nSquares.x; i++) {
-            for (int j = 0; j < this.nSquares.y; j++) {
+        for (int i = 0; i < this.MAX_WIDTH; i++) {
+            for (int j = 0; j < this.MAX_HEIGHT; j++) {
                 this.fields[i][j] = new MapGridPaneField(this.app, new Vector2d(i, j));
                 this.add(this.fields[i][j], i, j, 1, 1);
             }
         }
 
-        for (int i = 0; i < this.nSquares.x; i++)
+        for (int i = 0; i < this.MAX_WIDTH; i++)
             this.getColumnConstraints().add(new ColumnConstraints(this.fieldDimensions.x));
-        for (int i = 0; i < this.nSquares.y; i++)
+        for (int i = 0; i < this.MAX_HEIGHT; i++)
             this.getRowConstraints().add(new RowConstraints(this.fieldDimensions.y));
 
         this.setGridLinesVisible(false);
@@ -74,8 +75,8 @@ public class MapGridPane extends GridPane {
     }
 
     public void clear() {
-        for (int i = 0; i < this.nSquares.x; i++) {
-            for (int j = 0; j < this.nSquares.y; j++) {
+        for (int i = 0; i < this.MAX_WIDTH; i++) {
+            for (int j = 0; j < this.MAX_HEIGHT; j++) {
                 this.fields[i][j].clear();
             }
         }

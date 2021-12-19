@@ -9,6 +9,7 @@ public abstract class AbstractWorldMap implements IWorldMap {
     protected LinkedList<IMovableElement> movableElements;
     protected Rect2D boundingBox;
     protected HashSet<Vector2d> updatedFields;
+    public String name = "map";
 
     public AbstractWorldMap(int width, int height) {
         this.mapElements = new HashMap<>();

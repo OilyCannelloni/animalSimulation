@@ -90,7 +90,7 @@ public class App extends Application {
             if (mapName == null) mapName = "map_" + i;
 
             String mapType = mapBox.getMapTypeName();
-            JungleMap map = factory.createMap(mapType, mapBox.getMapData());
+            JungleMap map = factory.createMap(mapType, mapName, mapBox.getMapData());
             map.initialize();
             Simulation simulation = new Simulation(this, map);
 

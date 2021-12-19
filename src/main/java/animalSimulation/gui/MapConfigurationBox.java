@@ -24,6 +24,7 @@ public class MapConfigurationBox extends HBox {
         this.mapTypeSelect = new ComboBox<>();
         this.mapTypeSelect.setItems(FXCollections.observableArrayList(mapTypes));
         this.mapTypeSelect.setPrefWidth(200);
+        this.mapTypeSelect.setValue(mapTypes[0]);
 
         this.mapNameInput = new TextInputBox("Map Name", "map" + mapID);
 
@@ -33,9 +34,9 @@ public class MapConfigurationBox extends HBox {
                 new NumberInputBox("Height", 30),
                 new NumberInputBox("Width", 80),
                 new NumberInputBox("Jungle %", 10),
-                new NumberInputBox("Respawn Threshold", 0),
-                new NumberInputBox("Respawn Copies", 0),
-                new NumberInputBox("Repeat respawn", 0),
+                new NumberInputBox("Respawn Threshold", 5),
+                new NumberInputBox("Respawn Copies", 1),
+                new NumberInputBox("Respawn Repeat", 3),
                 new NumberInputBox("Start Energy", 100),
                 new NumberInputBox("Move Energy", 1),
                 new NumberInputBox("Initial Animals", 10),
