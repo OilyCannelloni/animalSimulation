@@ -18,7 +18,6 @@ public class App extends Application {
 
     public HashMap<String, IWorldMap> maps = new LinkedHashMap<>();
     public MapGridPane grid;
-    private final int epochs = Integer.MAX_VALUE;
     private String activeWorld;
     private final HashMap<String, Simulation> simulations = new LinkedHashMap<>();
     private final HashMap<String, StatDisplayBox> statDisplayBoxes = new HashMap<>();
@@ -118,7 +117,6 @@ public class App extends Application {
 
         this.pauseButton = new ToggleButton(
                 (e) -> {
-                    System.out.println("pauseButton");
                     Simulation sim = this.simulations.get(this.activeWorld);
                     sim.togglePause();
                     if (!sim.paused) synchronized (sim.pausePauseLock) {
@@ -127,7 +125,6 @@ public class App extends Application {
                         sim.pausePauseLock.notifyAll();
                     }
                     if (sim.paused) this.reloadGrid();
-                    System.out.printf("Simulation %s's pause set to %b", this.activeWorld, sim.paused);
                 },
                 "Unpause Simulation",
                 "Pause Simulation"
@@ -135,13 +132,11 @@ public class App extends Application {
 
         this.dominantGenomeSelectButton = new ToggleButton(
                 (e) -> {
-                    System.out.println("highlightButton");
                     if (!this.pauseButton.isActive) return;
                     IWorldMap activeMap = this.getActiveMap();
 
                     Pair<int[], LinkedList<Animal>> dominantAnimals =
                             Algorithm.getDominantGenomeAnimals(activeMap);
-                    System.out.println(dominantAnimals.getValue().size());
                     for (Animal animal : dominantAnimals.getValue()) {
                         Vector2d position = animal.getPosition();
                         activeMap.placeElement(new HighlightCircle(activeMap, position));
@@ -154,7 +149,6 @@ public class App extends Application {
 
         this.saveStatisticsButton = new ClickButton(
                 (e) -> {
-                    System.out.println("statButton");
                     this.getActiveSimulation().statistics.saveToCSV(this.activeWorld);
                 },
                 "Save simulation statistics"
@@ -184,6 +178,7 @@ public class App extends Application {
         this.chart.loadSimulation(this.getActiveSimulation());
         this.chart.setActiveChart("epochAnimalCount");
         ChartSelectComboBox chartSelectBox = new ChartSelectComboBox(this.chart);
+        chartSelectBox.setValue("epochAnimalCount");
         VBox graphBox = new VBox(chartSelectBox, this.chart);
 
         HBox optionsBox = new HBox(controlBox, statBox, graphBox, trackBox);
@@ -314,9 +309,6 @@ public class App extends Application {
         this.activeWorld = name;
         this.grid.setActiveMap(this.maps.get(this.activeWorld));
     }
-
-
-
 
     private void initialize() {
         String firstMap = this.maps.keySet().iterator().next();

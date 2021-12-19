@@ -5,8 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.util.Pair;
 
 import java.util.HashMap;
 
@@ -32,15 +30,15 @@ public class MapConfigurationBox extends HBox {
                 this.mapTypeSelect,
                 this.mapNameInput,
                 new NumberInputBox("Height", 30),
-                new NumberInputBox("Width", 80),
+                new NumberInputBox("Width", 100),
                 new NumberInputBox("Jungle %", 10),
                 new NumberInputBox("Respawn Threshold", 5),
                 new NumberInputBox("Respawn Copies", 1),
                 new NumberInputBox("Respawn Repeat", 3),
-                new NumberInputBox("Start Energy", 100),
+                new NumberInputBox("Start Energy", 200),
                 new NumberInputBox("Move Energy", 1),
-                new NumberInputBox("Initial Animals", 10),
-                new NumberInputBox("Plant Energy", 40)
+                new NumberInputBox("Initial Animals", 20),
+                new NumberInputBox("Plant Energy", 60)
         );
     }
 

@@ -37,8 +37,6 @@ public class JungleMap extends AbstractWorldMap {
         this.respawnRepeat = respawnRepeat;
 
         this.jungleBox = this.createJungleBox(junglePercentage);
-
-        System.out.println(this.jungleBox);
         assert this.boundingBox.contains(this.jungleBox);
     }
 
@@ -72,12 +70,10 @@ public class JungleMap extends AbstractWorldMap {
         return this.jungleBox;
     }
 
-    public boolean respawn() {
+    public void respawn() {
         int movableCount = this.movableElements.size();
-        System.out.println(movableCount + " " + this.respawnThreshold);
-        if (movableCount > this.respawnThreshold) return false;
-        System.out.println("repeat" + this.respawnRepeat);
-        if (--this.respawnRepeat < 0) return false;
+        if (movableCount > this.respawnThreshold) return;
+        if (--this.respawnRepeat < 0) return;
 
         System.out.println(this.name + ": Respawning animals");
 
@@ -93,6 +89,5 @@ public class JungleMap extends AbstractWorldMap {
             }
         }
         newAnimals.forEach(this::placeElement);
-        return true;
     }
 }
