@@ -1,11 +1,24 @@
 package animalSimulation;
 
+import animalSimulation.gui.ImageManager;
+
 public class WrappedJungleMap extends JungleMap {
 
 
-    public WrappedJungleMap(int width, int height, int junglePercentage,
-                            int respawnThreshold, int respawnCopies, int respawnRepeat) {
-        super(width, height, junglePercentage, respawnThreshold, respawnCopies, respawnRepeat);
+    public WrappedJungleMap(ImageManager imageManager,
+                            int startEnergy,
+                            int moveEnergy,
+                            int initAnimals,
+                            int plantEnergy,
+                            int width,
+                            int height,
+                            int junglePercentage,
+                            int respawnThreshold,
+                            int respawnCopies,
+                            int respawnRepeat
+    ) {
+        super(imageManager, startEnergy, moveEnergy, initAnimals, plantEnergy, width, height,
+                junglePercentage, respawnThreshold, respawnCopies, respawnRepeat);
     }
 
     @Override

@@ -8,8 +8,6 @@ import java.util.*;
 
 public class Simulation implements Runnable {
     private final JungleMap map;
-    private final AnimalFactory animalFactory;
-    private final PlantFactory plantFactory, junglePlantFactory;
     public AnimalTracker tracker;
 
     private final App app;
@@ -21,17 +19,14 @@ public class Simulation implements Runnable {
     public SimulationStatistics statistics;
     private EpochStatistics epochStatistics;
 
-    public Simulation(App app, JungleMap map, ImageManager imageManager) {
+    public Simulation(App app, JungleMap map) {
         this.map = map;
-        this.animalFactory = new AnimalFactory(map, imageManager, 50, 1);
-        this.plantFactory = new PlantFactory(map, imageManager, false, 20);
-        this.junglePlantFactory = new PlantFactory(map, imageManager, true, 20);
         this.app = app;
         this.pausePauseLock = new Object();
         this.renderPauseLock = new Object();
         this.statistics = new SimulationStatistics();
         this.tracker = new AnimalTracker(app, Algorithm.getRandomAnimal(map));
-        this.animalFactory.factoryObservers.add(this.tracker);
+        this.map.animalFactory.factoryObservers.add(this.tracker);
     }
 
     @Override
@@ -86,9 +81,9 @@ public class Simulation implements Runnable {
     }
 
     public void setTracker(Animal animal) {
-        this.animalFactory.factoryObservers.remove(this.tracker);
+        this.map.animalFactory.factoryObservers.remove(this.tracker);
         this.tracker.setAnimal(animal);
-        this.animalFactory.factoryObservers.add(this.tracker);
+        this.map.animalFactory.factoryObservers.add(this.tracker);
     }
 
     private int[] getDominantGenome() {
@@ -119,8 +114,8 @@ public class Simulation implements Runnable {
 
             Animal a1 = animals.removeLast(), a2 = animals.removeLast();
 
-            if (a2.getEnergy() > animalFactory.startEnergy / 1.4){
-                newAnimals.add(this.animalFactory.create(a1, a2));
+            if (a2.getEnergy() > this.map.animalFactory.startEnergy / 1.4){
+                newAnimals.add(this.map.animalFactory.create(a1, a2));
             }
         }
 
@@ -147,7 +142,7 @@ public class Simulation implements Runnable {
                 if (a.getEnergy() <= 0) {
                     this.epochStatistics.epochDeadCount++;
                     this.epochStatistics.epochDeadLifespan += a.lifespan;
-                    this.animalFactory.kill(a, this.epoch);
+                    this.map.animalFactory.kill(a, this.epoch);
                 }
             }
         }
@@ -156,12 +151,12 @@ public class Simulation implements Runnable {
     private void growPlants() {
         Vector2d jungleField = Algorithm.getRandomEmptyField(this.map, this.map.getJungleBox());
         if (jungleField != null) {
-            this.junglePlantFactory.createPlace(jungleField);
+            this.map.junglePlantFactory.createPlace(jungleField);
             this.epochStatistics.epochNewPlants++;
         }
         Vector2d plantField = Algorithm.getRandomEmptyFieldOutside(this.map, this.map.getJungleBox());
         if (plantField != null) {
-            this.plantFactory.createPlace(plantField);
+            this.map.plantFactory.createPlace(plantField);
             this.epochStatistics.epochNewPlants++;
         }
     }

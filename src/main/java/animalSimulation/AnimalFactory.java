@@ -62,6 +62,19 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         this.map.placeElement(this.create(parent1, parent2));
     }
 
+    public Animal copy(Animal animal, Vector2d position) {
+        return new Animal(
+                this.map,
+                this.imageManager,
+                position,
+                this.startEnergy,
+                this.startEnergy,
+                this.moveEnergy,
+                this.observers,
+                animal.getGenome()
+        );
+    }
+
     public Animal create(Animal parent1, Animal parent2) {
         int energyTransfer1 = parent1.getEnergy() / 4, energyTransfer2 = parent2.getEnergy() / 4;
         parent1.addEnergy(-energyTransfer1);

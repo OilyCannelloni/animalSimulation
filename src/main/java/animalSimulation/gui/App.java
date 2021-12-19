@@ -29,6 +29,7 @@ public class App extends Application {
     private ClickButton saveStatisticsButton;
     private StatisticsChart chart;
     private Stage primaryStage;
+    private ImageManager imageManager;
 
     private final String[] mapTypes = {
             "JungleMap",
@@ -38,6 +39,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        this.imageManager = new ImageManager();
+        imageManager.load();
         this.showInputPrompt();
     }
 
@@ -295,12 +298,14 @@ public class App extends Application {
 
 
     private void initialize() {
-        ImageManager imageManager = new ImageManager();
-        imageManager.load();
-
         this.showInputPrompt();
 
         JungleMap map1 = new JungleMap(
+                imageManager,
+                200,
+                1,
+                20,
+                50,
                 100,
                 30,
                 10,
@@ -308,16 +313,17 @@ public class App extends Application {
                 0,
                 0
         );
-        AnimalFactory animalFactory1 = new AnimalFactory(map1, imageManager,200, 1);
-        for (int i = 0; i < 20; i++) {
-            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map1, map1.getJungleBox());
-            animalFactory1.createPlace(position);
-        }
-        Simulation sim1 = new Simulation(this, map1, imageManager);
+        map1.initialize();
+
+        Simulation sim1 = new Simulation(this, map1);
         this.addWorld(map1, sim1, "map1");
 
-
         JungleMap map2 = new JungleMap(
+                imageManager,
+                200,
+                1,
+                40,
+                50,
                 100,
                 30,
                 2,
@@ -325,16 +331,17 @@ public class App extends Application {
                 0,
                 0
         );
-        AnimalFactory animalFactory2 = new AnimalFactory(map2, imageManager,200, 1);
-        for (int i = 0; i < 40; i++) {
-            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map2, map2.getJungleBox());
-            animalFactory2.createPlace(position);
-        }
-        Simulation sim2 = new Simulation(this, map2, imageManager);
+        map2.initialize();
+
+        Simulation sim2 = new Simulation(this, map2);
         this.addWorld(map2, sim2, "map2");
 
-
         JungleMap map3 = new JungleMap(
+                imageManager,
+                200,
+                1,
+                30,
+                50,
                 100,
                 30,
                 20,
@@ -342,12 +349,9 @@ public class App extends Application {
                 0,
                 0
         );
-        AnimalFactory animalFactory3 = new AnimalFactory(map3, imageManager,200, 1);
-        for (int i = 0; i < 40; i++) {
-            Vector2d position = Algorithm.getRandomEmptyFieldOutside(map3, map3.getJungleBox());
-            animalFactory3.createPlace(position);
-        }
-        Simulation sim3 = new Simulation(this, map3, imageManager);
+        map3.initialize();
+
+        Simulation sim3 = new Simulation(this, map3);
         this.addWorld(map3, sim3, "map3");
 
 

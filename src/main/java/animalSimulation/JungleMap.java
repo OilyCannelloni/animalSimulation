@@ -1,13 +1,35 @@
 package animalSimulation;
 
+import animalSimulation.gui.ImageManager;
+
 public class JungleMap extends AbstractWorldMap {
     private final Rect2D jungleBox;
-    private int respawnThreshold, respawnCopies, respawnRepeat;
+    private final int respawnThreshold;
+    private int respawnCopies;
+    private int respawnRepeat, initAnimals;
+    public AnimalFactory animalFactory;
+    public PlantFactory plantFactory, junglePlantFactory;
 
-    public JungleMap(int width, int height, int junglePercentage,
-                     int respawnThreshold, int respawnCopies, int respawnRepeat) {
+    public JungleMap(ImageManager imageManager,
+                     int startEnergy,
+                     int moveEnergy,
+                     int initAnimals,
+                     int plantEnergy,
+                     int width,
+                     int height,
+                     int junglePercentage,
+                     int respawnThreshold,
+                     int respawnCopies,
+                     int respawnRepeat
+    ) {
         super(width, height);
 
+
+        this.animalFactory = new AnimalFactory(this, imageManager, startEnergy, moveEnergy);
+        this.plantFactory = new PlantFactory(this, imageManager, false, plantEnergy);
+        this.junglePlantFactory = new PlantFactory(this, imageManager, true, plantEnergy);
+
+        this.initAnimals = initAnimals;
         this.respawnThreshold = respawnThreshold;
         this.respawnCopies = respawnCopies;
         this.respawnRepeat = respawnRepeat;
@@ -16,9 +38,15 @@ public class JungleMap extends AbstractWorldMap {
 
         System.out.println(this.jungleBox);
         assert this.boundingBox.contains(this.jungleBox);
-
-
     }
+
+    public void initialize() {
+        for (int i = 0; i < this.initAnimals; i++) {
+            Vector2d position = Algorithm.getRandomEmptyFieldOutside(this, this.getJungleBox());
+            this.animalFactory.createPlace(position);
+        }
+    }
+
 
     private Rect2D createJungleBox(int junglePercentage) {
         double sideScaleFactor = Math.sqrt(((double) junglePercentage) / 100);
@@ -43,8 +71,16 @@ public class JungleMap extends AbstractWorldMap {
     }
 
     public void respawn() {
+        int movableCount = this.movableElements.size();
+        if (movableCount > this.respawnThreshold) return;
         if (--this.respawnRepeat < 0) return;
 
+        for (IMovableElement movableElement : this.movableElements) {
+            if (movableElement instanceof Animal) {
+                Animal animal = (Animal) movableElement;
+                this.animalFactory.copy(animal, Algorithm.getRandomEmptyField(this));
+            }
+        }
 
     }
 }

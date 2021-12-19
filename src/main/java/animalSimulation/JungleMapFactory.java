@@ -1,11 +1,15 @@
 package animalSimulation;
 
+import animalSimulation.gui.ImageManager;
+
 import java.util.HashMap;
 
 public class JungleMapFactory {
     HashMap<String, Class<? extends JungleMap>> mapTypes;
+    private ImageManager imageManager;
 
-    public JungleMapFactory() {
+    public JungleMapFactory(ImageManager imageManager) {
+        this.imageManager = imageManager;
         this.mapTypes = new HashMap<>();
         this.mapTypes.put("JungleMap", JungleMap.class);
         this.mapTypes.put("WrappedJungleMap", WrappedJungleMap.class);
@@ -30,7 +34,18 @@ public class JungleMapFactory {
 
         int respawnRepeat = 0;
 
+        int startEnergy = 100;
+        int moveEnergy = 1;
+        int initAnimals = 10;
+
+        int plantEnergy = 50;
+
         JungleMap map = new JungleMap(
+                imageManager,
+                startEnergy,
+                moveEnergy,
+                initAnimals,
+                plantEnergy,
                 width,
                 height,
                 junglePercentage,
