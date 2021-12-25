@@ -33,7 +33,7 @@ public final class Animal extends AbstractMovableElement {
     public final static int maxEnergy = 30, genomeLength = 32, geneVariants = 8;
     private int energy;
     private final int moveEnergy, startEnergy;
-    private final int[] genome;
+    private final Genome genome;
     private HashMap<FacingEnergyPair, Image> images;
     private final ImageManager imageManager;
     public int lifespan, childCount, deathEpoch = -1;
@@ -46,7 +46,7 @@ public final class Animal extends AbstractMovableElement {
             int energy,
             int moveEnergy,
             List<IActionObserver> observers,
-            int[] genome
+            Genome genome
     ) {
         super(map, position, observers);
         this.imageManager = imageManager;
@@ -87,12 +87,12 @@ public final class Animal extends AbstractMovableElement {
         if (this.energy > this.startEnergy) this.energy = startEnergy;
     }
 
-    public int[] getGenome() {
+    public Genome getGenome() {
         return this.genome;
     }
 
     public void makeMove() {
-        int delta = Algorithm.getRandom(this.genome);
+        int delta = Algorithm.getRandom(this.genome.value);
         if (delta == 0) this.move(true);
         else if (delta == 4) this.move(false);
         else {

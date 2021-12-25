@@ -25,7 +25,6 @@ public class App extends Application {
     public Thread guiUpdateThread;
     public final Object gridUpdatePauseLock = new Object();
     private ToggleButton pauseButton, dominantGenomeSelectButton;
-    private ClickButton saveStatisticsButton;
     private StatisticsChart chart;
     private Stage primaryStage;
     private ImageManager imageManager;
@@ -135,7 +134,7 @@ public class App extends Application {
                     if (!this.pauseButton.isActive) return;
                     IWorldMap activeMap = this.getActiveMap();
 
-                    Pair<int[], LinkedList<Animal>> dominantAnimals =
+                    Pair<Genome, LinkedList<Animal>> dominantAnimals =
                             Algorithm.getDominantGenomeAnimals(activeMap);
                     for (Animal animal : dominantAnimals.getValue()) {
                         Vector2d position = animal.getPosition();
@@ -147,7 +146,7 @@ public class App extends Application {
                 "Show animals with dominant genome"
         );
 
-        this.saveStatisticsButton = new ClickButton(
+        ClickButton saveStatisticsButton = new ClickButton(
                 (e) -> {
                     this.getActiveSimulation().statistics.saveToCSV(this.activeWorld);
                 },
@@ -156,7 +155,7 @@ public class App extends Application {
 
 
         VBox controlBox = new VBox(simulationSelect, this.pauseButton, this.dominantGenomeSelectButton,
-                this.saveStatisticsButton);
+                saveStatisticsButton);
 
         // Statistics
         for (Field f : SimulationStatistics.class.getFields()) {
@@ -185,10 +184,7 @@ public class App extends Application {
 
         VBox SceneVBox = new VBox(this.grid, optionsBox);
 
-        Scene scene = new Scene(
-                SceneVBox
-        );
-
+        Scene scene = new Scene(SceneVBox);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -227,7 +223,7 @@ public class App extends Application {
         while (true) {
             // sleep
             try {
-                Thread.sleep(300);
+                Thread.sleep(50);
             } catch (InterruptedException ignore) {}
 
             // wait for simulation turn to complete

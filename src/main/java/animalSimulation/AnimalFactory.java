@@ -42,7 +42,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 this.startEnergy,
                 this.moveEnergy,
                 this.observers,
-                Algorithm.generateRandomGenome(Animal.genomeLength, Animal.geneVariants)
+                new Genome()
         );
     }
 
@@ -90,7 +90,7 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
                 energyTransfer1 + energyTransfer2,
                 this.moveEnergy,
                 this.observers,
-                Algorithm.intersectGenome(parent1, parent2)
+                new Genome(parent1, parent2)
         );
 
         for (IActionObserver observer : this.factoryObservers) observer.animalBorn(parent1, parent2, a);

@@ -87,7 +87,7 @@ public class AnimalTracker extends ActionObserver {
         stats.aliveDescendantCount = this.getDescendantCount();
         stats.diedEpoch = this.animal.deathEpoch;
         stats.childCount = this.totalChildren;
-        stats.genome = this.animal.getGenome();
+        stats.genome = this.animal.getGenome().value;
         stats.position = this.animal.getPosition();
         stats.energy = this.animal.getEnergy();
         return stats;

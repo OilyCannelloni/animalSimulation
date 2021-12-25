@@ -34,7 +34,7 @@ public class Simulation implements Runnable {
         while (true) {
             // wait
             try {
-                Thread.sleep(300);
+                Thread.sleep(50);
             } catch (InterruptedException ignore) {}
 
             // wait for App to finish drawing
@@ -90,9 +90,9 @@ public class Simulation implements Runnable {
     }
 
     private int[] getDominantGenome() {
-        Pair<int[], LinkedList<Animal>> dominantAnimals = Algorithm.getDominantGenomeAnimals(this.map);
+        Pair<Genome, LinkedList<Animal>> dominantAnimals = Algorithm.getDominantGenomeAnimals(this.map);
         this.epochStatistics.epochDominantGenomeCount = dominantAnimals.getValue().size();
-        return dominantAnimals.getKey();
+        return dominantAnimals.getKey().value;
     }
 
 
@@ -193,6 +193,7 @@ public class Simulation implements Runnable {
             }
 
             int nAnimals = bestAnimals.size();
+            if (nAnimals == 0) continue;
             int eatEnergy = plant.getPlantEnergy() / nAnimals;
             bestAnimals.forEach((Animal a) -> a.addEnergy(eatEnergy));
 
