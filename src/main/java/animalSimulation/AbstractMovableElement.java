@@ -16,11 +16,6 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
     }
 
     @Override
-    public boolean canMove() {
-        return true;
-    }
-
-    @Override
     public void move(boolean forward) {
         int mul = forward ? 1 : -1;
         Vector2d expected_target = this.position.add(this.facing.toUnitVector().multiplyEach(mul));
@@ -29,8 +24,6 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
             this.onMove();
             this.positionChanged(this.position, target);
             this.position = target;
-
-            if (!target.equals(expected_target)) System.out.println("Wrapped at " + target);
         }
     }
 
@@ -49,11 +42,6 @@ public abstract class AbstractMovableElement extends AbstractMapElement implemen
         for (IActionObserver observer : this.observers) {
             observer.positionChanged(this, oldPosition, newPosition);
         }
-    }
-
-    @Override
-    public Facing getFacing() {
-        return this.facing;
     }
 
     protected void onMove() {}

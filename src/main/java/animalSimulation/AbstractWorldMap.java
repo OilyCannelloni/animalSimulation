@@ -36,11 +36,11 @@ public abstract class AbstractWorldMap implements IWorldMap {
     }
 
     @Override
-    public boolean placeElement(IMapElement element) {
+    public void placeElement(IMapElement element) {
         Vector2d position = element.getPosition();
         if (!this.canMoveTo(position)) {
             System.out.printf("Cannot place %s at %s%n", element, position);
-            return false;
+            return;
         }
         LinkedList<IMapElement> elementsAtPosition = this.mapElements.get(position);
         if (elementsAtPosition == null) {
@@ -56,7 +56,6 @@ public abstract class AbstractWorldMap implements IWorldMap {
         }
 
         this.updatedFields.add(position);
-        return true;
     }
 
     protected void forcePlaceElement(IMapElement element, Vector2d position) {

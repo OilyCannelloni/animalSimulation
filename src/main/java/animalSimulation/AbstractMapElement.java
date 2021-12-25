@@ -13,9 +13,4 @@ public abstract class AbstractMapElement implements IMapElement {
     public Vector2d getPosition() {
         return this.position;
     }
-
-    @Override
-    public void interactWith(IMapElement other) {
-
-    }
 }

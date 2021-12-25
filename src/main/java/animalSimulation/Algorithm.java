@@ -1,22 +1,10 @@
 package animalSimulation;
 
 import javafx.util.Pair;
-
 import java.util.*;
 
 public class Algorithm {
     public static final Random random = new Random(System.currentTimeMillis());
-
-    public static void shuffleArray(int[] array, int firstN) {
-        if (firstN >= array.length) return;
-        int index, temp;
-        for (int i = 0; i < firstN; i++) {
-            index = i + random.nextInt(array.length - i);
-            temp = array[index];
-            array[index] = array[i];
-            array[i] = temp;
-        }
-    }
 
     public static double map(double x, double a1, double b1, double a2, double b2) {
         double p = (x - a1)/(b1 - a1);
@@ -27,11 +15,7 @@ public class Algorithm {
         return arr[random.nextInt(arr.length)];
     }
 
-    public static Vector2d getRandomField(IWorldMap map) {
-        return getRandomField(map, map.getBoundingBox());
-    }
-
-    public static Vector2d getRandomField(IWorldMap map, Rect2D region) {
+    public static Vector2d getRandomField(Rect2D region) {
         return new Vector2d(
                 region.lowerLeft.x + random.nextInt(region.getDimensions().x),
                 region.lowerLeft.y + random.nextInt(region.getDimensions().y)
@@ -47,7 +31,7 @@ public class Algorithm {
         Vector2d position;
         int trials = 100;
         do {
-            position = getRandomField(map, region);
+            position = getRandomField(region);
             if (--trials == 0) {
                 return null;
             }
@@ -115,7 +99,6 @@ public class Algorithm {
                 animalsWithGenome.entrySet(),
                 Map.Entry.comparingByValue(Comparator.comparingInt(LinkedList::size))
         );
-        if (maxEntry.getValue().size() >= 2) System.out.println(maxEntry.getValue().size());
         return new Pair<>(maxEntry.getKey(), maxEntry.getValue());
     }
 }

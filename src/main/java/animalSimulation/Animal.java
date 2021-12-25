@@ -30,7 +30,6 @@ public final class Animal extends AbstractMovableElement {
         }
     }
 
-    public final static int maxEnergy = 30, genomeLength = 32, geneVariants = 8;
     private int energy;
     private final int moveEnergy, startEnergy;
     private final Genome genome;
@@ -75,7 +74,7 @@ public final class Animal extends AbstractMovableElement {
     public Image getImage() {
         int mappedEnergy = (int) Algorithm.map(this.energy, 0, this.startEnergy, 0, 5.999);
         FacingEnergyPair key = new FacingEnergyPair(this.facing, mappedEnergy);
-        return this.images.get(new FacingEnergyPair(this.facing, mappedEnergy));
+        return this.images.get(key);
     }
 
     public int getEnergy(){

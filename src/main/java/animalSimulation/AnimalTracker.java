@@ -5,7 +5,7 @@ import animalSimulation.gui.App;
 import java.util.HashSet;
 
 public class AnimalTracker extends ActionObserver {
-    private App app;
+    private final App app;
     private Animal animal;
     private final IWorldMap map;
     private int totalChildren = 0;
@@ -74,10 +74,6 @@ public class AnimalTracker extends ActionObserver {
                 map.placeElement(this.trackingCircle);
             }
         }
-    }
-
-    public Vector2d getCirclePosition() {
-        return this.trackingCircle.getPosition();
     }
 
     public AnimalStatistics getAnimalStatistics() {

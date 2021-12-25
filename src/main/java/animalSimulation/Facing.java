@@ -1,7 +1,6 @@
 package animalSimulation;
 
 import java.util.Arrays;
-import java.util.List;
 
 public enum Facing {
     N,
@@ -33,7 +32,6 @@ public enum Facing {
 
     public String toString() {
         switch (this) {
-            case N: return "N";
             case NE: return "NE";
             case E: return "E";
             case SE: return "SE";

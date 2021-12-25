@@ -58,10 +58,6 @@ public class AnimalFactory extends MovableElementFactory implements IFactory<Ani
         for (IActionObserver observer : this.factoryObservers) observer.animalDied(animal);
     }
 
-    public void createPlace(Animal parent1, Animal parent2) {
-        this.map.placeElement(this.create(parent1, parent2));
-    }
-
     public Animal copy(Animal animal, Vector2d position) {
         return new Animal(
                 this.map,

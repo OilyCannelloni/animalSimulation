@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class JungleMapFactory {
     HashMap<String, Class<? extends JungleMap>> mapTypes;
-    private ImageManager imageManager;
+    private final ImageManager imageManager;
 
     public JungleMapFactory(ImageManager imageManager) {
         this.imageManager = imageManager;

@@ -7,8 +7,9 @@ import java.util.LinkedList;
 public class JungleMap extends AbstractWorldMap {
     private final Rect2D jungleBox;
     private final int respawnThreshold;
-    private int respawnCopies;
-    private int respawnRepeat, initAnimals;
+    private final int respawnCopies;
+    private int respawnRepeat;
+    private final int initAnimals;
     public AnimalFactory animalFactory;
     public PlantFactory plantFactory, junglePlantFactory;
 

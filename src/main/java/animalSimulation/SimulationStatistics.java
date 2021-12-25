@@ -8,7 +8,7 @@ import java.util.ListIterator;
 
 public class SimulationStatistics {
     public LinkedList<EpochStatistics> simulationLog;
-    private LinkedList<IStatisticsObserver> observers;
+    private final LinkedList<IStatisticsObserver> observers;
 
     public long
             allTimeDeadCount = 1,
@@ -115,6 +115,6 @@ public class SimulationStatistics {
         csvWriter.writeEntry(avgEntry);
 
         csvWriter.close();
-        System.out.println("Saved statistics as " + fileName);
+        System.out.println("Saved statistics as ./saves/" + fileName + ".csv");
     }
 }

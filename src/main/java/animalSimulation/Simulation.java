@@ -1,7 +1,6 @@
 package animalSimulation;
 
 import animalSimulation.gui.App;
-import animalSimulation.gui.ImageManager;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -31,7 +30,7 @@ public class Simulation implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (this.epoch < Integer.MAX_VALUE) {
             // wait
             try {
                 Thread.sleep(50);
